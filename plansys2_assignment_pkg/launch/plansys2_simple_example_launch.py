@@ -39,7 +39,7 @@ def generate_launch_description():
             'launch',
             'plansys2_bringup_launch_monolithic.py')),
         launch_arguments={
-          'model_file': example_dir + '/pddl/ass_example.pddl',
+          'model_file': example_dir + '/pddl/simple_example.pddl',
           'namespace': namespace
           }.items())
 
@@ -51,33 +51,23 @@ def generate_launch_description():
         namespace=namespace,
         output='screen',
         parameters=[])
-    
-    bug_node = Node(
-        package='plansys2_assignment_pkg',  # Replace with the actual package name
-        executable='bug0.py',
-        name='bug0',
-    )
-    
-    go_srv_node = Node(
-        package='plansys2_assignment_pkg',  # Replace with the actual package name
-        executable='go_to_point_srv.py',
-        name='go_to_point_srv',
-    )
-    
-    wall_srv_node = Node(
-        package='plansys2_assignment_pkg',  # Replace with the actual package name
-        executable='wall_follow_srv.py',
-        name='wall_follow_srv',
-    )
-    
+    """
+    charge_cmd = Node(
+        package='plansys2_assignment_pkg',
+        executable='charge_action_node',
+        name='charge_action_node',
+        namespace=namespace,
+        output='screen',
+        parameters=[])
 
-    go_to_action_node = Node(
-        package='plansys2_assignment_pkg',  # Replace with the actual package name
-        executable='go_to_action_node.py',
-        name='go_to_action_node',
-    )
-
-    
+    ask_charge_cmd = Node(
+        package='plansys2_assignment_pkg',
+        executable='ask_charge_action_node',
+        name='ask_charge_action_node',
+        namespace=namespace,
+        output='screen',
+        parameters=[])   # Create the launch description and populate
+    """
     ld = LaunchDescription()
 
     ld.add_action(declare_namespace_cmd)
@@ -86,9 +76,7 @@ def generate_launch_description():
     ld.add_action(plansys2_cmd)
 
     ld.add_action(move_cmd)
-    ld.add_action(bug_node)
-    ld.add_action(go_srv_node)
-    ld.add_action(wall_srv_node)
-    ld.add_action(go_to_action_node)
+    #ld.add_action(charge_cmd)
+    #ld.add_action(ask_charge_cmd)
 
     return ld

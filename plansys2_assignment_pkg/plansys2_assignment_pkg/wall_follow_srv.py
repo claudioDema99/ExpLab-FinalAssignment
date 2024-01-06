@@ -1,0 +1,152 @@
+#!/usr/bin/env python3
+
+import rclpy
+from rclpy.node import Node
+from geometry_msgs.msg import Twist
+from sensor_msgs.msg import LaserScan
+from std_srvs.srv import SetBool
+
+active_ = False
+pub_ = None
+regions_ = {
+    'right': 0,
+    'fright': 0,
+    'front': 0,
+    'fleft': 0,
+    'left': 0,
+}
+state_ = 0
+state_dict_ = {
+    0: 'find the wall',
+    1: 'turn left',
+    2: 'follow the wall',
+}
+
+class ReadingLaser(Node):
+    def __init__(self):
+        super().__init__('reading_laser')
+        
+        global pub_
+        pub_ = self.create_publisher(Twist, '/cmd_vel', 1)
+        
+        self.sub = self.create_subscription(LaserScan, '/scan', self.clbk_laser, 1)
+        
+        self.srv = self.create_service(SetBool, 'wall_follower_switch', self.wall_follower_switch)
+        
+        self.active_ = False
+        
+        self.get_logger().info('ReadingLaser node initialized')
+        self.rate = self.create_rate(20)
+
+    def wall_follower_switch(self, req, res):
+        global active_
+        self.active_ = req.data
+        res.success = True
+        res.message = 'Done!'
+        return res
+
+    def clbk_laser(self, msg):
+        global regions_
+        regions_ = {
+            'right': min(min(msg.ranges[0:143]), 10),
+            'fright': min(min(msg.ranges[144:287]), 10),
+            'front': min(min(msg.ranges[288:431]), 10),
+            'fleft': min(min(msg.ranges[432:575]), 10),
+            'left': min(min(msg.ranges[576:713]), 10),
+        }
+
+        self.take_action()
+
+    def change_state(self, state):
+        global state_, state_dict_
+        if state is not state_:
+            self.get_logger().info(f'Wall follower - [{state}] - {state_dict_[state]}')
+            state_ = state
+
+    def take_action(self):
+        global regions_
+        regions = regions_
+        msg = Twist()
+        linear_x = 0
+        angular_z = 0
+        state_description = ''
+
+        d0 = 1
+        d = 1.5
+
+        if regions['front'] > d0 and regions['fleft'] > d and regions['fright'] > d:
+            state_description = 'case 1 - nothing'
+            self.change_state(0)
+        elif regions['front'] < d0 and regions['fleft'] > d and regions['fright'] > d:
+            state_description = 'case 2 - front'
+            self.change_state(1)
+        elif regions['front'] > d0 and regions['fleft'] > d and regions['fright'] < d:
+            state_description = 'case 3 - fright'
+            self.change_state(2)
+        elif regions['front'] > d0 and regions['fleft'] < d and regions['fright'] > d:
+            state_description = 'case 4 - fleft'
+            self.change_state(0)
+        elif regions['front'] < d0 and regions['fleft'] > d and regions['fright'] < d:
+            state_description = 'case 5 - front and fright'
+            self.change_state(1)
+        elif regions['front'] < d0 and regions['fleft'] < d and regions['fright'] > d:
+            state_description = 'case 6 - front and fleft'
+            self.change_state(1)
+        elif regions['front'] < d0 and regions['fleft'] < d and regions['fright'] < d:
+            state_description = 'case 7 - front and fleft and fright'
+            self.change_state(1)
+        elif regions['front'] > d0 and regions['fleft'] < d and regions['fright'] < d:
+            state_description = 'case 8 - fleft and fright'
+            self.change_state(0)
+        else:
+            state_description = 'unknown case'
+            self.get_logger().info(regions)
+
+    def find_wall(self):
+        msg = Twist()
+        msg.linear.x = 0.2
+        msg.angular.z = -0.3
+        return msg
+
+    def turn_left(self):
+        msg = Twist()
+        msg.angular.z = 0.3
+        return msg
+
+    def follow_the_wall(self):
+        global regions_
+        msg = Twist()
+        msg.linear.x = 0.5
+        return msg
+
+    def run(self):
+        while rclpy.ok():
+            if not self.active_:
+                self.rate.sleep()
+                continue
+            else:
+                msg = Twist()
+                if state_ == 0:
+                    msg = self.find_wall()
+                elif state_ == 1:
+                    msg = self.turn_left()
+                elif state_ == 2:
+                    msg = self.follow_the_wall()
+                else:
+                    self.get_logger().error('Unknown state!')
+
+                pub_.publish(msg)
+
+            self.rate.sleep()
+
+def main(args=None):
+    rclpy.init(args=args)
+    reading_laser_node = ReadingLaser()
+    reading_laser_node.run()
+    rclpy.spin(reading_laser_node)
+    reading_laser_node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+
