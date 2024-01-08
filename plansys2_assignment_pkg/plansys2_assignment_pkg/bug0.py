@@ -34,12 +34,14 @@ class Bug0(Node):
         self.srv_client_wall_follower = self.create_client(SetBool, '/wall_follower_switch')
         self.client = self.create_client(SetBool, 'response_go_to')                                   # CLT FOR SEND THAT THE ACTION IS COMPLETED
 
+        self.service = self.create_service(SetBool, 'go_to_marker', self.service_callback)            # SRV FOR STARTING THE ACTION
+
         while not (self.srv_client_go_to_point.wait_for_service(timeout_sec=1.0) and
-                   self.srv_client_wall_follower.wait_for_service(timeout_sec=1.0) and 
-                   self.client.wait_for_service(timeout_sec=1.0)):
+                   self.srv_client_wall_follower.wait_for_service(timeout_sec=1.0)):
             self.get_logger().info('Services not available, waiting again...')
         
-        self.service = self.create_service(SetBool, 'go_to_marker', self.service_callback)            # SRV FOR STARTING THE ACTION
+        while not (self.client.wait_for_service(timeout_sec=1.0)):
+            self.get_logger().info('Services CLIENT not available, waiting again...')
 
         self.sub_laser = self.create_subscription(LaserScan, '/laser/scan', self.clbk_laser, QoSProfile(depth=10))
         self.sub_odom = self.create_subscription(Odometry, '/odom', self.clbk_odom, QoSProfile(depth=10))
@@ -49,8 +51,8 @@ class Bug0(Node):
         #self.action_server = ActionServer(self, MyRos2Plan, 'my_ros2_plan', self.exe_callback)
         
         # initialize going to the point
-        self.desired_position.x = 0.0
-        self.desired_position.y = 1.0
+        self.desired_position.x = 3.0
+        self.desired_position.y = 5.0
         self.get_logger().info('Bug0 node initialized')
 
     def clbk_odom(self, msg):
@@ -113,10 +115,9 @@ class Bug0(Node):
             
             self.get_logger().info('charging ... {}'.format(i))
             
-            """
+            
             if err_pos < 0.5:
                 self.change_state(2)
-                goal_handle.succeed()
                 self.done()
                 break
 
@@ -148,6 +149,7 @@ class Bug0(Node):
                 self.change_state(2)
                 self.done()
                 break
+            """
 
         request = SetBool.Request()
         request.data = True

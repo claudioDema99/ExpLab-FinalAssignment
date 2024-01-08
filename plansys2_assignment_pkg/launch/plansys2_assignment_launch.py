@@ -22,7 +22,6 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
-
 def generate_launch_description():
     # Get the launch directory
     example_dir = get_package_share_directory('plansys2_assignment_pkg')
@@ -43,15 +42,7 @@ def generate_launch_description():
           'namespace': namespace
           }.items())
 
-    # Specify the actions
-    move_cmd = Node(
-        package='plansys2_assignment_pkg',
-        executable='move_action_node',
-        name='move_action_node',
-        namespace=namespace,
-        output='screen',
-        parameters=[])
-    
+    # Specify the actions    
     bug_node = Node(
         package='plansys2_assignment_pkg',  # Replace with the actual package name
         executable='bug0.py',
@@ -84,8 +75,6 @@ def generate_launch_description():
 
     # Declare the launch options
     ld.add_action(plansys2_cmd)
-
-    ld.add_action(move_cmd)
     ld.add_action(bug_node)
     ld.add_action(go_srv_node)
     ld.add_action(wall_srv_node)

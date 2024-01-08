@@ -29,11 +29,10 @@ class GoToAction(ActionExecutorClient):
     def __init__(self):
         super().__init__('go_to_marker', 0.5)
         #self.action_client = ActionClient(self, MyRos2Plan, 'my_ros2_plan')
+        self.service = self.create_service(SetBool, 'response_go_to', self.service_callback)
         self.client = self.create_client(SetBool, 'go_to_marker')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting...')
-        self.service = self.create_service(SetBool, 'response_go_to', self.service_callback)
-
 
     def callback(self, future):
         try:
