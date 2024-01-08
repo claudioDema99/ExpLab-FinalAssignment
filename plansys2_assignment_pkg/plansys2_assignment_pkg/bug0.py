@@ -32,40 +32,35 @@ class Bug0(Node):
 
         self.srv_client_go_to_point = self.create_client(SetBool, '/go_to_point_switch')
         self.srv_client_wall_follower = self.create_client(SetBool, '/wall_follower_switch')
+        self.client = self.create_client(SetBool, 'response_go_to')                                   # CLT FOR SEND THAT THE ACTION IS COMPLETED
 
         while not (self.srv_client_go_to_point.wait_for_service(timeout_sec=1.0) and
-                   self.srv_client_wall_follower.wait_for_service(timeout_sec=1.0)):
+                   self.srv_client_wall_follower.wait_for_service(timeout_sec=1.0) and 
+                   self.client.wait_for_service(timeout_sec=1.0)):
             self.get_logger().info('Services not available, waiting again...')
+        
+        self.service = self.create_service(SetBool, 'go_to_marker', self.service_callback)            # SRV FOR STARTING THE ACTION
 
-        #self.sub_laser = self.create_subscription(LaserScan, '/scan', self.clbk_laser, QoSProfile(depth=10))
+        self.sub_laser = self.create_subscription(LaserScan, '/laser/scan', self.clbk_laser, QoSProfile(depth=10))
         self.sub_odom = self.create_subscription(Odometry, '/odom', self.clbk_odom, QoSProfile(depth=10))
         self.pub = self.create_publisher(Twist, '/cmd_vel', QoSProfile(depth=10))
+
         #self.act_s = self.create_server(Planning, '/reaching_goal', self.planning)
         #self.action_server = ActionServer(self, MyRos2Plan, 'my_ros2_plan', self.exe_callback)
         
-        self.service = self.create_service(SetBool, 'go_to_marker', self.service_callback)
-        self.client = self.create_client(SetBool, 'response_go_to')
-        while not self.client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Service not available, waiting...')
-
         # initialize going to the point
         self.desired_position.x = 0.0
         self.desired_position.y = 1.0
-
         self.get_logger().info('Bug0 node initialized')
 
     def clbk_odom(self, msg):
-        # position
         self.position = msg.pose.pose.position
         self.pose = msg.pose.pose
         self.get_logger().info(' RICEVO ODOM')
-
-        # yaw
         qx = msg.pose.pose.orientation.x
         qy = msg.pose.pose.orientation.y
         qz = msg.pose.pose.orientation.z
         qw = msg.pose.pose.orientation.w
-        # Convert quaternion to theta
         self.yaw = math.atan2(2.0*(qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz)
         if self.yaw < 0:
             self.yaw = math.pi + (math.pi + self.yaw)
@@ -73,11 +68,11 @@ class Bug0(Node):
     def clbk_laser(self, msg):
         self.get_logger().info(' RICEVO LASER')
         self.regions = {
-            'right': 30,#min(min(msg.ranges[0:143]), 10),
-            'fright': 30,#min(min(msg.ranges[144:287]), 10),
-            'front': 30,#min(min(msg.ranges[288:431]), 10),
-            'fleft': 30,#min(min(msg.ranges[432:575]), 10),
-            'left': 30,#min(min(msg.ranges[576:719]), 10),
+            'right': min(min(msg.ranges[100:139]), 10),
+            'fright': min(min(msg.ranges[140:179]), 10),
+            'front': min(min(msg.ranges[180:219]), 10),
+            'fleft': min(min(msg.ranges[220:259]), 10),
+            'left': min(min(msg.ranges[260:299]), 10),
         }
 
     def change_state(self, state):
