@@ -31,7 +31,7 @@ class ReadingLaser(Node):
         global pub_
         pub_ = self.create_publisher(Twist, '/cmd_vel', 1)
         
-        self.sub = self.create_subscription(LaserScan, '/scan', self.clbk_laser, 1)
+        self.sub = self.create_subscription(LaserScan, '/laser/scan', self.clbk_laser, 1)
         
         self.srv = self.create_service(SetBool, 'wall_follower_switch', self.wall_follower_switch)
         
@@ -69,38 +69,38 @@ class ReadingLaser(Node):
     def take_action(self):
         global regions_
         regions = regions_
-        msg = Twist()
-        linear_x = 0
-        angular_z = 0
-        state_description = ''
 
         d0 = 1
         d = 1.5
-
+        
+        
         if regions['front'] > d0 and regions['fleft'] > d and regions['fright'] > d:
             state_description = 'case 1 - nothing'
             self.change_state(0)
-        elif regions['front'] < d0 and regions['fleft'] > d and regions['fright'] > d:
-            state_description = 'case 2 - front'
-            self.change_state(1)
-        elif regions['front'] > d0 and regions['fleft'] > d and regions['fright'] < d:
-            state_description = 'case 3 - fright'
-            self.change_state(2)
         elif regions['front'] > d0 and regions['fleft'] < d and regions['fright'] > d:
             state_description = 'case 4 - fleft'
             self.change_state(0)
+        elif regions['front'] > d0 and regions['fleft'] < d and regions['fright'] < d:
+            state_description = 'case 8 - fleft and fright'
+            self.change_state(0)
+                
+        elif regions['front'] < d0 and regions['fleft'] > d and regions['fright'] > d:
+            state_description = 'case 2 - front'
+            self.change_state(1)
         elif regions['front'] < d0 and regions['fleft'] > d and regions['fright'] < d:
             state_description = 'case 5 - front and fright'
             self.change_state(1)
         elif regions['front'] < d0 and regions['fleft'] < d and regions['fright'] > d:
             state_description = 'case 6 - front and fleft'
-            self.change_state(1)
+            self.change_state(1)     
         elif regions['front'] < d0 and regions['fleft'] < d and regions['fright'] < d:
             state_description = 'case 7 - front and fleft and fright'
             self.change_state(1)
-        elif regions['front'] > d0 and regions['fleft'] < d and regions['fright'] < d:
-            state_description = 'case 8 - fleft and fright'
-            self.change_state(0)
+                 
+        elif regions['front'] > d0 and regions['fleft'] > d and regions['fright'] < d:
+            state_description = 'case 3 - fright'
+            self.change_state(2) 
+               
         else:
             state_description = 'unknown case'
             self.get_logger().info(regions)
@@ -108,13 +108,14 @@ class ReadingLaser(Node):
     def find_wall(self):
         print("FW")
         msg = Twist()
-        msg.linear.x = 0.1
+        msg.linear.x = 0.2
         msg.angular.z = -0.3
         return msg
 
     def turn_left(self):
         print("TL")
         msg = Twist()
+        msg.linear.x = 0.0
         msg.angular.z = 0.3
         return msg
 
@@ -123,6 +124,7 @@ class ReadingLaser(Node):
         global regions_
         msg = Twist()
         msg.linear.x = 0.5
+        msg.angular.z = 0.0
         return msg
 
     def run(self):
@@ -134,10 +136,13 @@ class ReadingLaser(Node):
             msg = Twist()
             if state_ == 0:
                 msg = self.find_wall()
+                print("FIND WALL")
             elif state_ == 1:
                 msg = self.turn_left()
+                print("TURN LEFT")
             elif state_ == 2:
                 msg = self.follow_the_wall()
+                print("FOLLOW WALL")
             else:
                 self.get_logger().error('Unknown state!')
 

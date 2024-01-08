@@ -139,10 +139,7 @@ class GoToPoint(Node):
         self.pub.publish(twist_msg)
 
     def run(self):
-        if not self.active:
-            self.get_logger().info("")
-            #self.get_logger().info(" not ACTIVE")
-        else:
+        if self.active:
             #self.get_logger().info(" ACTIVEeeeeeee")
             self.desired_position.x = 5.0 # DA METTERE POS self.get_parameter('des_pos_x').value
             self.desired_position.y = 5.0 # DA METTERE POS self.get_parameter('des_pos_y').value
