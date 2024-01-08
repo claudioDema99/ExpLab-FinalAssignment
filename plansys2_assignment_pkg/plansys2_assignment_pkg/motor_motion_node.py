@@ -78,7 +78,7 @@ class MotorControl(Node):
                 rclpy.shutdown()
             # wait for the start of the action
             # do nothing
-            self.get_logger().info('Waiting for the start of the action...')
+            #self.get_logger().info('Waiting for the start of the action...')
 
     def odom_callback(self, msg):
         # callback for updating the robot orientation
