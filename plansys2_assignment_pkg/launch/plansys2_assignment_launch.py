@@ -98,7 +98,6 @@ def generate_launch_description():
         name='aruco_node'
     )
 
-    
     ld = LaunchDescription()
 
     ld.add_action(declare_namespace_cmd)
