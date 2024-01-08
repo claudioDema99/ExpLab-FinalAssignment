@@ -21,7 +21,7 @@ In order to detect the markers ID, the ArUco and the OpenCV packages are being u
 - marker 11 is visible from the position x = 6.0, y = 2.0
 - marker 12 is visible from the position x = 7.0, y = -5.0
 - marker 13 is visible from the position x = -3.0, y = -8.0
-- marker 15 is visible from the position x = -7s.0, y =-1.5
+- marker 15 is visible from the position x = -7.0, y =-1.5
 
 
 This project is implemented in simulation using the world file assignment2.world.
@@ -35,21 +35,87 @@ In simulation we are using the model of the ROSbot2R, a mobile robot platform de
 The robot has a RGBD Camera used to visualize the sourrinding enviroment and detect the interest objects.
 
 <figure>
-<img src="readme_image/robot.jpg" style="width:40%">
+<img src="readme_image/robot.jpg" style="width:70%">
 </figure>
 <br/>
 
 
 
+## PDDL
 
-//////////////////////////////////////////
+The Planning Domain Definition Language (PDDL) file included in this repository (</plansys2_assignment_pkg/pddl>) defines the planning domain for the robotic system. This file specifies the types, predicates, numeric fluents, and durative actions necessary for the robot to accomplish the assigned tasks of marker localization and navigation.
+
+Domain Elements:
+1) Types:
+- marker: Represents markers or points of interest.
+- position: Represents locations or positions in the environment.
+
+2) Predicates:
+- (at_robot ?p0): Indicates that the robot is at position ?p0.
+- (at_marker ?m ?p1): Specifies that marker ?m is at position ?p1.
+- (connected_pos ?pos1 ?pos2): Denotes a connection between positions ?pos1 and ?pos2.
+- (reached ?m): Indicates that marker ?m has been reached.
+
+3) Numeric Fluents:
+
+- Currently commented out (visibility ?m - marker): Placeholder for potential numeric fluents, representing visibility or other numeric values.
+
+4) Durative Actions:
+- go_to_marker: Represents the action of the robot moving from position ?from to ?to to reach marker ?m.
+- find_marker: Represents the action of the robot finding marker ?m at position ?pos.
 
 
+## THE NODES
 
+# go_to_action_node
 
+the GoToAction node is designed to be an action executor within the ROS 2 environment and it responsible for executing specific actions within the defined planning domain.
+It serves basically as the bridge between the high-level planning specified in the PDDL file and the actual execution of actions on the robotic platform.
 
+Features:
+- Extends the ActionExecutorClient class, allowing seamless integration with PlanSys2 actions.
+- Utilizes an Action Client (ActionExecutorClient) to manage the execution of the durative action'go_to_marker.'
+- Provides a service (/response_go_to) to handle responses and completion status of the 'go_to_marker' action.
+- Communicates with an additional service client (/go_to_marker) to trigger the initiation of the 'go_to_marker' action.
+- Configurable parameters, such as action_name and timeout_sec, for adapting to specific use cases.
 
+# go_to_point_srv
 
+The GoToPoint node focuses on robotic navigation by directing the robot to move towards a specified point in its environment. This node utilizes odometry information to adjust the robot's orientation and linear movement. The robot can be switched between an active and inactive state using a service call.
+
+Features:
+- Tracks robot state variables including position (x, y) and yaw orientation.
+- Implements a finite-state machine to manage different stages of movement.
+- Accepts a desired goal position and performs the necessary actions to reach it.
+- Utilizes proportional controllers for both angular and linear movements.
+- Offers ROS2 services to switch the node's active state and provide feedback on completion.
+- Subscribes to odometry and laser scan topics for real-time sensor feedback.
+- Provides flexibility in adjusting parameters such as precision, proportional gains, and bounds.
+
+# wall_follow_srv
+
+This node implements a wall-following behavior based on laser scan data. It switches between different states (finding the wall, turning left, and following the wall) and adjusts the robot's movement accordingly. The state transitions are determined by the presence and distances of obstacles in different regions according to laser scan readings.
+
+Features:
+- Subscribes to the /scan topic to receive laser scan data, providing information about the robot's surroundings.
+- Implements a wall-following strategy with three distinct states: finding the wall, turning left, and following the wall.
+- Exposes a service (/wall_follower_switch) to dynamically activate or deactivate the wall-following behavior.
+- Utilizes a finite-state machine to manage different wall-following scenarios.
+- Adjusts the robot's velocity and angular velocity using Twist messages to navigate and follow the wall.
+- Incorporates configurable distance thresholds (d0 and d) to determine proximity to obstacles and make corresponding decisions.
+
+# bug0
+
+The Bug0 node is a ROS 2 implementation of the Bug 0 algorithm for mobile robot navigation. The Bug 0 algorithm is a simple method that combines "go-to-point" and "wall-following" behaviors to reach a desired goal point while avoiding obstacles.
+
+Features:
+- Utilizes laser scan data and odometry information to navigate in its environment.
+- Implements a state machine with three states:
+- - Go to point (State 0): The robot moves directly towards the goal point.
+- - Wall following (State 1): If an obstacle is encountered during the "go to point" phase, the robot switches to following the wall until a clear path is available.
+- - Done (State 2): Indicates successful completion of the goal point or the task.
+- Supports a service (/go_to_marker) to trigger the Bug 0 algorithm and start the navigation process.
+- Capable of handling asynchronous service calls and continuously adjusts its behavior based on laser readings and robot position.
 
 
 ## Logic of the program 🔄
@@ -69,169 +135,6 @@ At this point the camera sends the actual value of the angle of rotation so the 
 Once both robot and camera are aligned, the robot starts going straight.  
 While the robot goes, the *RobotController* checks the length of the longest side visible from the camera: when it surpasses a threshold, it means that the target is reached and the process can restart with the next marker.  
 Once all the markers are reached, all the nodes shut down.
-
-## The Nodes ⛓
-
-The ROS 2 graph, showing the nodes and the connections between them:
-<br/>
-<figure>
-<img src="readme_image/rosgraph.png" style="width:70%">
-</figure>
-<br/>
-
-
-
-
-
-
-
-## ROBOT CONTROLLER 🧠
-
-The ROS2 node RobotControl for controlling a robot's motion based on the detection of ArUco markers through a camera. The node follows a marker-based navigation approach, utilizing marker information to guide the robot's movements.
-
-### Subscribers
-
-1. **Aruco Markers Subscriber (aruco_markers):**
-   - Listens for information about ArUco markers detected by the camera.
-   - Updates the internal state with marker IDs.
-2. **Aruco Corners Subscriber (aruco_corners):**
-   - Listens for updates on the corners of detected ArUco markers.
-   - Updates the internal state with the corners' coordinates.
-     
-### Publishers
-
-1. **Camera On/Off Publisher (camera_on_off):**
-   - Publishes a `Bool` message to activate or deactivate camera rotation for searching ArUco markers.
-2. **Marker Reached Publisher (marker_reached):**
-   - Publishes a `Bool` message indicating whether the robot has reached the targeted ArUco marker or if the target has been lost from the camera's view.
-
-### Timer
-
-- Utilizes a timer to execute the main controller logic periodically.
-
-### Internal Variables
-
-- `id_marker:` ID of the current ArUco marker to reach.
-- `position_marker:` Position of the current marker in the list of markers seen by the camera.
-- `corners_marker:` Corners of the currently targeted ArUco marker.
-- `goal_markers:` List of ArUco markers to reach.
-- `reached_marker:` Number of markers successfully reached.
-- `flag:` Flag used for the main logic to switch between camera rotation and marker following.
-- `flag_marker:` Flag to check if the targeted marker is found by the camera.
-- `last_marker_area:` Value for comparing two consecutive measurements of the room areaalue for comparing two consecutive measurements of the room area.
-- `iteration:` Wait the inaccurate measurement of the camera.
-
-### Controller Logic
-
-1. Camera Rotation Mode (flag == 0):
-   - Activates camera rotation and waits for a targeted ArUco marker to be found.
-   - When a marker is found, transitions to marker following mode.
-2. Marker Following Mode (flag == 1):
-   - Follows the targeted ArUco marker using camera feedback.
-   - Checks if the marker is within a specified area to consider it reached.
-   - Publishes messages to indicate marker reaching status.
-3. Completion Condition:
-   - Terminates the node when all specified ArUco markers are successfully reached.
-
-## MOTOR CONTROL 🚂
-
-The ROS2 node MotorControl for controlling the robot's motion through the input that it received from the RobotControl node. The node simply wait for receiving the angle of the Aruco Marker detection and it alligns with it, so it go straight until it received from the controller a stop message.
-
-### Subscribers
-
-1. **Odometry Subscriber (odom):**
-   - Listens and updates the orientation of the robot.
-   - Used for allign the robot with the detection angle of the Aruco Marker.
-2. **Camera Angle Subscriber (camera_theta_goal):**
-   - Receives the angle of the detected Aruco Marker.
-   - When the node received it, it begins to allign itself to this orientation.
-3. **Marker Reached Subscriber (marker_reached):**
-   - Receives a Bool from the controller.
-   - It means that the area of the Aruco Marker is sufficiently big, so the robot can stop.
-     
-### Publishers
-
-1. **Command Velocity Publisher (cmd_vel):**
-   - Publishes a `Twist` message to move the robot inside the environment.
-2. **Inverse Rotation Publisher (inverse_rotation):**
-   - Used for sincronyze the rotation of the robot with the opposite rotation of the camera, in order to let the camera know the verse in which it has to rotate.
-
-### Internal Variables
-
-- `theta:` The actual orientation angle of the robot.
-- `theta_goal:` The orientation angle received from the detection of the Aruco Marker.
-- `flag:` Used to actually manage the states of the node.
-- `dt:` Used for the timer and the sleep function inside the node.
-
-### Timer and Controller Logic
-
-- Utilizes a timer to execute the main controller logic periodically using a flag:
-   - **flag = 0:** The robot is waiting for receiving the angle of detection: when it receives from the `camera_theta_goal` topic, it passes through the next state;
-   - **flag = 1:** The robot is alligning with the Aruco Marker and it constantly publish to the camera its actual rotation speed in order to let the camera rotates in the opposite direction;
-   - **flag = 2:** The robot is going straight to the Aruco Marker until it receives a 'stop message' from the controller;
-   - **flag = 3:** The robot stops and go backwards to allow next iteration.
-
-## ROBOT REVOLUTE NODE 📹
-
-
-### Description
-This ROS2 node controls the camera joint attached to a vertical link that rotates along the z-axis.
-
-### Subscribers
-1. **Camera Modality Subscriber**
-   - **Topic:** `camera_on_off`
-   - **Message Type:** `Bool`
-   - **Callback Function:** `camera_modality_callback`
-   
-   This node listens to the robot_action_client to know if:
-   	**True** = the joint has to rotate constantly looking for a new tarket
-   	**False** it has to compensate the rotation of the four wheeled robot
-
-2. **Rotation Subscriber**
-   - **Topic:** `inverse_rotation`
-   - **Message Type:** `Float64`
-   - **Callback Function:** `rotation_callback`
-   
-   This node listens to the motor_controller to know in which direction the four wheel robot is rotating. Knowing the values, it just simply compensate 
-   in the opposite direction the camera.
-
-3. **Marker Reached Subscriber**
-   - **Topic:** `marker_reached`
-   - **Message Type:** `Bool`
-   - **Callback Function:** `marker_reached_callback`
-   
-   This node listen to the robot_action_client to know if a marker is reached.
-
-### Publishers
-1. **Rotation Goal Publisher**
-   - **Topic:** `camera_theta_goal`
-   - **Message Type:** `Float64`
-   - **Published by:** `publisher_rotation_goal`
-   
-   This node send the current angle of rotation to the four wheeled robot to know the orientation that is required to the robot to reach the next marker
-
-2. **Joint Commands Publisher**
-   - **Topic:** `/joint_cam_controller/commands`
-   - **Message Type:** `Float64MultiArray`
-   - **Published by:** `cmd_vel_pub`
-   
-   This node updates the joint position along the z-axis of a certain angle during a fixed time
-
-### Internal Variables
-- **`dt`:** Control loop cycle time (seconds)
-- **`sign`:** Direction of rotation (-1 or 1) that represents counter-clockwise and clockwise rotation
-- **`current_angle`:** Current angle of the camera (Float64)
-- **`modality`:** Camera modality (Bool) - True for searching new markers, False for compensating the wheeled robot rotation
-- **`angular_velocity`:** Current angular velocity of the wheeled robot (Float64)
-- **`theta_goal`:** Current angle of the camera to the rotation controller (Float64). It is sent to the four wheeled robot to know where the markers is.
-- **`modality_timer`:** Timer for checking camera modality
-- **`cnt_shutdown`:** Counter for marker reached events, after reaching the last one, the node shutsdown.
-
-### Timer and Controller Logic
-- **Timer:** `modality_timer` triggers the `camera_modality` function every `dt` seconds.
-- **Controller Logic:**
-  - If `modality` is True, the camera rotates incrementally, and commands are published to rotate the joint.
-  - If `modality` is False, the node compensates for robot rotation based on the angular velocity, adjusting the camera angle and publishing the goal angle.
 
 
 ## Install and run ⚙
@@ -275,5 +178,6 @@ We attempted to implement an action-client server for motion control, integratin
 However, when we incorporated coordinates obtained from the camera, the robot's motion became erratic. After conducting numerous tests, we identified a potential issue with the relative positions due to the lack of camera calibration.
 
 To enhance the system, we are considering camera calibration to rectify the inaccuracies associated with the relative positions. This calibration process aims to improve the accuracy of the camera data, which should subsequently result in more reliable and precise robot movements. Probabily, after calibration we will assess the impact on the overall performance of the action-client server for motion control.
+
 
 
