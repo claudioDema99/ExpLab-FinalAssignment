@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 
 import rclpy
-from rclpy.action import ActionServer
+from rclpy.node import Node
 from geometry_msgs.msg import Point, Pose, Twist
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from std_srvs.srv import SetBool
 import math
-import time
 from rclpy.qos import QoSProfile
 from rclpy.node import Node
-from my_interface.action import MyRos2Plan
-from action_msgs.msg import GoalStatus
 
 class Bug0(Node):
     def __init__(self):

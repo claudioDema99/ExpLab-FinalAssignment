@@ -2,7 +2,6 @@
 
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
-import time
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan

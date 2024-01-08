@@ -5,9 +5,7 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from std_srvs.srv import SetBool
 from geometry_msgs.msg import Twist, Point
-from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
-import time
 import math
 
 class GoToPoint(Node):
