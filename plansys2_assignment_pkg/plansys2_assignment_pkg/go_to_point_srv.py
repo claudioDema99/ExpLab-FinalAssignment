@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import rclpy
+from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from std_srvs.srv import SetBool
 from geometry_msgs.msg import Twist, Point
@@ -50,12 +51,15 @@ class GoToPoint(Node):
 
         self.get_logger().info('GoToPoint node initialized')
 
+        self.timer = self.create_timer(0.1, self.run)
+
     def go_to_point_switch(self, req, res):
+        self.get_logger().info(" CI SIAMO NELLO SWITCH")
         self.active = req.data
         res.success = True
         res.message = 'Done!'
         return res
-
+    
     def clbk_odom(self, msg):
         # position
         self.position = msg.pose.pose.position
@@ -129,13 +133,10 @@ class GoToPoint(Node):
         self.pub.publish(twist_msg)
 
     def run(self):
-        rate = self.create_rate(20)
-
-        while rclpy.ok():
-            if not self.active:
-                rate.sleep()
-                continue
-
+        if not self.active:
+            self.get_logger().info(" not ACTIVE")
+        else:
+            self.get_logger().info(" ACTIVEeeeeeee")
             self.desired_position.x = 5.0 # DA METTERE POS self.get_parameter('des_pos_x').value
             self.desired_position.y = 5.0 # DA METTERE POS self.get_parameter('des_pos_y').value
 
@@ -148,16 +149,23 @@ class GoToPoint(Node):
             else:
                 self.get_logger().error('Unknown state!')
 
-            rate.sleep()
-
 def main(args=None):
     rclpy.init(args=args)
+
     go_to_point_node = GoToPoint()
-    go_to_point_node.run()
-    rclpy.spin(go_to_point_node)
+
+    executor = MultiThreadedExecutor()
+
+    executor.add_node(go_to_point_node)
+
+    try:
+        executor.spin()
+    except KeyboardInterrupt:
+        pass
+
+    # Cleanup
     go_to_point_node.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
-

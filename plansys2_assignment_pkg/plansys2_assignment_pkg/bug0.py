@@ -113,9 +113,6 @@ class Bug0(Node):
             err_pos = math.sqrt(pow(self.desired_position.y - self.position.y, 2) +
                                 pow(self.desired_position.x - self.position.x, 2))
             
-            self.get_logger().info('charging ... {}'.format(i))
-            
-            
             if err_pos < 0.5:
                 self.change_state(2)
                 self.done()

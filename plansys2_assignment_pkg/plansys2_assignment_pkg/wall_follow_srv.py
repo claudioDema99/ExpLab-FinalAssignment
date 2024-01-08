@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import rclpy
+from rclpy.executors import MultiThreadedExecutor
+import time
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
@@ -36,7 +38,8 @@ class ReadingLaser(Node):
         self.active_ = False
         
         self.get_logger().info('ReadingLaser node initialized')
-        self.rate = self.create_rate(20)
+
+        self.timer = self.create_timer(0.1, self.run)
 
     def wall_follower_switch(self, req, res):
         global active_
@@ -120,30 +123,40 @@ class ReadingLaser(Node):
         return msg
 
     def run(self):
-        while rclpy.ok():
-            if not self.active_:
-                self.rate.sleep()
-                continue
+        if not self.active_:
+            self.get_logger().info(" NOT Active")
+        else:
+            self.get_logger().info(" AAA")
+            msg = Twist()
+            if state_ == 0:
+                msg = self.find_wall()
+            elif state_ == 1:
+                msg = self.turn_left()
+            elif state_ == 2:
+                msg = self.follow_the_wall()
             else:
-                msg = Twist()
-                if state_ == 0:
-                    msg = self.find_wall()
-                elif state_ == 1:
-                    msg = self.turn_left()
-                elif state_ == 2:
-                    msg = self.follow_the_wall()
-                else:
-                    self.get_logger().error('Unknown state!')
+                self.get_logger().error('Unknown state!')
 
-                pub_.publish(msg)
-
-            self.rate.sleep()
+            pub_.publish(msg)
 
 def main(args=None):
     rclpy.init(args=args)
+
     reading_laser_node = ReadingLaser()
-    reading_laser_node.run()
-    rclpy.spin(reading_laser_node)
+
+    executor = MultiThreadedExecutor()
+
+    executor.add_node(reading_laser_node)
+
+    try:
+        executor.spin_once() 
+        while rclpy.ok():
+            executor.spin_once()
+
+    except KeyboardInterrupt:
+        pass
+
+    # Cleanup
     reading_laser_node.destroy_node()
     rclpy.shutdown()
 
