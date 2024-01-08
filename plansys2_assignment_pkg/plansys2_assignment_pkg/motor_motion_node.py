@@ -4,7 +4,7 @@ import math
 import time
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
-from std_msgs.msg import Float64, Bool
+from std_msgs.msg import Bool
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 
@@ -98,6 +98,7 @@ class MotorControl(Node):
         # the robot start the rotation
         if mode == True:
             self.flag = 0
+        # the robot stop the rotation and go straight
         elif mode == False and self.flag == 0:
             self.stop()
             time.sleep(self.dt * 2)
@@ -108,12 +109,14 @@ class MotorControl(Node):
     def reached_callback(self, msg):
         # callback for stopping the robot when the marker is reached
         stop = msg.data
-          
+        
+        # the robot has reached the marker and stop the movement
         if stop == True and self.flag == 1:
             self.stop()
             time.sleep(self.dt * 2)
             self.flag += 1
             time.sleep(self.dt * 2)
+        # the robot has left the marker and go back to rotate and search for the marker
         elif stop == False and self.flag == 1:
             self.stop()
             self.flag = 0
