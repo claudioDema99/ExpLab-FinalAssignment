@@ -36,11 +36,13 @@ install(TARGETS
 )
 
 install(PROGRAMS
-  plansys2_assignment_pkg/charge_action_node.py
   plansys2_assignment_pkg/bug0.py
   plansys2_assignment_pkg/go_to_action_node.py
   plansys2_assignment_pkg/go_to_point_srv.py
   plansys2_assignment_pkg/wall_follow_srv.py
+  plansys2_assignment_pkg/camera_check_node.py
+  plansys2_assignment_pkg/marker_searcher_action.py
+  plansys2_assignment_pkg/motor_motion_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
