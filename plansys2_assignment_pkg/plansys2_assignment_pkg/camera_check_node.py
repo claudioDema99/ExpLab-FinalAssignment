@@ -14,7 +14,7 @@ import math
 class CameraCheck(Node):
 
     def __init__(self):
-        super().__init__('camera_check', 0.5)    
+        super().__init__('camera_check')    
         self.srv_client_marker_searcher = self.create_client(SetBool, 'response_marker_searcher')
            
         self.service = self.create_service(SetBool, 'search_marker', self.service_callback) 

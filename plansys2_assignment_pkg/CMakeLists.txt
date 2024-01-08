@@ -19,12 +19,6 @@ set(dependencies
     plansys2_executor
 )
 
-add_executable(move_action_node src/move_action_node.cpp)
-ament_target_dependencies(move_action_node ${dependencies})
-
-add_executable(ask_charge_action_node src/ask_charge_action_node.cpp)
-ament_target_dependencies(ask_charge_action_node ${dependencies})
-
 install(DIRECTORY launch pddl DESTINATION share/${PROJECT_NAME})
 
 install(PROGRAMS

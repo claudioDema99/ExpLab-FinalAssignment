@@ -87,14 +87,14 @@ def generate_launch_description():
     
     aruco_generate_marker_node = Node(
         package='ros2_aruco',
-        executable='aruco_generate_marker.py',
-        name='aruco_generate_marker'
+        executable='aruco_generate_marker',
+        name='aruco_generate_marker',
     )
     
     aruco_node = Node(
         package='ros2_aruco',
-        executable='aruco_node.py',
-        name='aruco_node'
+        executable='aruco_node',
+        name='aruco_node',
     )
 
     ld = LaunchDescription()
