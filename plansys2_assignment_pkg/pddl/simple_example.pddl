@@ -3,18 +3,18 @@
 
 ;; Types ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (:types
-robot
-room
+    robot
+    room
 );; end Types ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Predicates ;;;;;;;;;;;;;;;;;;;;;;;;;
 (:predicates
 
-(robot_at ?r - robot ?ro - room)
-(connected ?ro1 ?ro2 - room)
-(battery_full ?r - robot)
-(battery_low ?r - robot)
-(charging_point_at ?ro - room)
+    (robot_at ?r - robot ?ro - room)
+    (connected ?ro1 ?ro2 - room)
+    (battery_full ?r - robot)
+    (battery_low ?r - robot)
+    (charging_point_at ?ro - room)
 
 );; end Predicates ;;;;;;;;;;;;;;;;;;;;
 ;; Functions ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -29,7 +29,7 @@ room
         (at start(connected ?r1 ?r2))
         (at start(robot_at ?r ?r1))
         (over all(battery_full ?r))
-        )
+    )
     :effect (and
         (at start(not(robot_at ?r ?r1)))
         (at end(robot_at ?r ?r2))
@@ -42,7 +42,7 @@ room
     :condition (and
         (at start(robot_at ?r ?r1))
         (at start(charging_point_at ?r2))
-       )
+    )
     :effect (and
         (at start(not(robot_at ?r ?r1)))
         (at end(robot_at ?r ?r2))
