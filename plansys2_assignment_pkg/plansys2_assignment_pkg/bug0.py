@@ -127,11 +127,6 @@ class Bug0(Node):
                 self.get_logger().info(" Waiting Laser information..")
 
             elif self.state == 0:
-                self.get_logger().error(f'Front left region: {self.regions_["fleft"]}')
-                self.get_logger().info(f'Left region: {self.regions_["left"]}')
-                self.get_logger().error(f'Front region: {self.regions_["front"]}')
-                self.get_logger().info(f'Right region: {self.regions_["right"]}')
-                self.get_logger().error(f'Front right region: {self.regions_["fright"]}')
                 
                 if self.regions_['front'] < 1.0: # SE NON RICEVO LASER CALLBACK ERRORE
                     self.change_state(1)
