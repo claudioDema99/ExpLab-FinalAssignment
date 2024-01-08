@@ -35,7 +35,7 @@ In simulation we are using the model of the ROSbot2R, a mobile robot platform de
 The robot has a RGBD Camera used to visualize the sourrinding enviroment and detect the interest objects.
 
 <figure>
-<img src="readme_image/robot.jpg" style="width:70%">
+<img src="readme_image/robot.jpg" style="width:50%">
 </figure>
 <br/>
 
