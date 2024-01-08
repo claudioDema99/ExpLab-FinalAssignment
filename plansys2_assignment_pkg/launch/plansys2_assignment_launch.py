@@ -79,16 +79,16 @@ def generate_launch_description():
         name='camera_check_node',
     )
     
-    camera_check_node = Node(
+    marker_searcher_action = Node(
         package='plansys2_assignment_pkg',  # Replace with the actual package name
-        executable='camera_check_node.py',
-        name='camera_check_node',
+        executable='marker_searcher_action.py',
+        name='marker_searcher_action',
     )
     
-    marker_searcher_action = Node(
+    aruco_generate_marker_node = Node(
         package='ros2_aruco',
-        executable='marker_searcher_action.py',
-        name='marker_searcher_action'
+        executable='aruco_generate_marker.py',
+        name='aruco_generate_marker'
     )
     
     aruco_node = Node(
