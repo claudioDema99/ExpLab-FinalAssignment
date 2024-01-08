@@ -51,7 +51,7 @@ class Bug0(Node):
         #self.action_server = ActionServer(self, MyRos2Plan, 'my_ros2_plan', self.exe_callback)
         
         # initialize going to the point
-        self.desired_position.x = 3.0
+        self.desired_position.x = 5.0
         self.desired_position.y = 5.0
         self.get_logger().info('Bug0 node initialized')
 
