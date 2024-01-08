@@ -67,6 +67,36 @@ def generate_launch_description():
         executable='go_to_action_node.py',
         name='go_to_action_node',
     )
+    
+    motor_motion_node = Node(
+        package='plansys2_assignment_pkg',  # Replace with the actual package name
+        executable='motor_motion_node.py',
+        name='motor_motion_node',
+    )
+    
+    camera_check_node = Node(
+        package='plansys2_assignment_pkg',  # Replace with the actual package name
+        executable='camera_check_node.py',
+        name='camera_check_node',
+    )
+    
+    camera_check_node = Node(
+        package='plansys2_assignment_pkg',  # Replace with the actual package name
+        executable='camera_check_node.py',
+        name='camera_check_node',
+    )
+    
+    marker_searcher_action = Node(
+        package='ros2_aruco',
+        executable='marker_searcher_action.py',
+        name='marker_searcher_action'
+    )
+    
+    aruco_node = Node(
+        package='ros2_aruco',
+        executable='aruco_node.py',
+        name='aruco_node'
+    )
 
     
     ld = LaunchDescription()
@@ -79,5 +109,10 @@ def generate_launch_description():
     ld.add_action(go_srv_node)
     ld.add_action(wall_srv_node)
     ld.add_action(go_to_action_node)
+    ld.add_action(motor_motion_node)
+    ld.add_action(camera_check_node)
+    ld.add_action(marker_searcher_action)
+    ld.add_action(aruco_generate_marker_node)
+    ld.add_action(aruco_node)
 
     return ld
