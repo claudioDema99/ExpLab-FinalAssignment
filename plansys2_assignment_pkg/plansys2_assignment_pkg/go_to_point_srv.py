@@ -26,6 +26,8 @@ class GoToPoint(Node):
         self.desired_position.x = 0.0 #self.get_parameter('des_pos_x').value
         self.desired_position.y = 0.0 #self.get_parameter('des_pos_y').value
         self.desired_position.z = 0.0
+        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-3, -8.0), (-7.0, -1.5)]
+        self.counter = 0
 
         # parameters
         self.yaw_precision = math.pi / 9  # +/- 20 degree allowed
@@ -42,7 +44,7 @@ class GoToPoint(Node):
         self.pub = self.create_publisher(Twist, '/cmd_vel', 1)
 
         # service callbacks
-        self.service = self.create_service(SetBool, 'response_go_to', self.service_callback) #############################################################
+        self.service = self.create_service(SetBool, 'response_go_to', self.service_callback)
 
         self.srv = self.create_service(SetBool, 'go_to_point_switch', self.go_to_point_switch)
 
@@ -55,7 +57,8 @@ class GoToPoint(Node):
 
         self.timer = self.create_timer(0.1, self.run)
 
-    def service_callback(self, request, response): ########################################################
+    def service_callback(self, request, response):
+        self.counter += 1
         response.success = True
         return response
 
@@ -140,10 +143,10 @@ class GoToPoint(Node):
 
     def run(self):
         if self.active:
-            #self.get_logger().info(" ACTIVEeeeeeee")
-            self.desired_position.x = 5.0 # DA METTERE POS self.get_parameter('des_pos_x').value
-            self.desired_position.y = 5.0 # DA METTERE POS self.get_parameter('des_pos_y').value
-
+            position = self.marker_pos[self.counter]
+            x_des, y_des = position
+            self.desired_position.x = x_des
+            self.desired_position.y = y_des
             if self.state == 0:
                 self.fix_yaw(self.desired_position)
             elif self.state == 1:

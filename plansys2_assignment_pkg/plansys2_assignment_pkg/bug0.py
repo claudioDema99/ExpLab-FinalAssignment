@@ -17,12 +17,15 @@ class Bug0(Node):
     def __init__(self):
         super().__init__('bug0')
 
+        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-3, -8.0), (-7.0, -1.5)]
+        self.counter = 0
+
         self.active = False
         self.yaw_error_allowed = 5 * (math.pi / 180)  # 5 degrees
         self.position = Point()
         self.pose = Pose()
         self.desired_position = Point()
-        self.desired_position.z = 0.0
+        #self.desired_position.z = 0.0
         self.regions_ = None
         self.state_desc = ['Go to point', 'wall following', 'done']
         self.state = 0
@@ -33,27 +36,19 @@ class Bug0(Node):
 
         self.srv_client_go_to_point = self.create_client(SetBool, '/go_to_point_switch')
         self.srv_client_wall_follower = self.create_client(SetBool, '/wall_follower_switch')
-        self.client = self.create_client(SetBool, 'response_go_to')                                   # CLT FOR SEND THAT THE ACTION IS COMPLETED
-
-        self.service = self.create_service(SetBool, 'go_to_marker', self.service_callback)            # SRV FOR STARTING THE ACTION
+        self.client = self.create_client(SetBool, 'response_go_to')
+        self.service = self.create_service(SetBool, 'go_to_spot', self.service_callback)
 
         while not (self.srv_client_go_to_point.wait_for_service(timeout_sec=1.0) and
-                   self.srv_client_wall_follower.wait_for_service(timeout_sec=1.0)):
+                   self.srv_client_wall_follower.wait_for_service(timeout_sec=1.0) and
+                   self.client.wait_for_service(timeout_sec=1.0)):
             self.get_logger().info('Services not available, waiting again...')
-        
-        while not (self.client.wait_for_service(timeout_sec=1.0)):
-            self.get_logger().info('Services CLIENT not available, waiting again...')
 
         self.sub_laser = self.create_subscription(LaserScan, '/laser/scan', self.clbk_laser, QoSProfile(depth=10))
         self.sub_odom = self.create_subscription(Odometry, '/odom', self.clbk_odom, QoSProfile(depth=10))
         self.pub = self.create_publisher(Twist, '/cmd_vel', QoSProfile(depth=10))
-
-        #self.act_s = self.create_server(Planning, '/reaching_goal', self.planning)
-        #self.action_server = ActionServer(self, MyRos2Plan, 'my_ros2_plan', self.exe_callback)
-        
-        # initialize going to the point
-        self.desired_position.x = 5.0
-        self.desired_position.y = 5.0
+        #self.desired_position.x = 0.0
+        #self.desired_position.y = 0.0
         self.get_logger().info('Bug0 node initialized')
 
         self.timer = self.create_timer(0.1, self.run)
@@ -106,10 +101,11 @@ class Bug0(Node):
     def service_callback(self, request, response):
         self.change_state(0)
         self.active = request.data
-
-        #self.desired_position.x = goal_handle.request.x_goal
-        #self.desired_position.y = goal_handle.request.y_goal
-
+        position = self.marker_pos[self.counter]
+        self.counter += 1
+        x_des, y_des = position
+        self.desired_position.x = x_des
+        self.desired_position.y = y_des
         response.success = True
         return response
     
@@ -127,8 +123,7 @@ class Bug0(Node):
                 self.get_logger().info(" Waiting Laser information..")
 
             elif self.state == 0:
-                
-                if self.regions_['front'] < 1.0: # SE NON RICEVO LASER CALLBACK ERRORE
+                if self.regions_['front'] < 1.0:
                     self.change_state(1)
 
             elif self.state == 1:
