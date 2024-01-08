@@ -24,13 +24,13 @@
     :duration (= ?duration 1)
     :condition (and
       (at start(at_robot ?from))
-      (at start(at_marker ?m ?to))
+      (over all(at_marker ?m ?to))
       (over all(connected_pos ?from ?to))
       ;;(over all(= (visibility ?m) 0))
     )
     :effect (and
       (at end(at_robot ?to))
-      (at end (not(at_robot ?from)))
+      (at end(not (at_robot ?from)))
       ;;(at end(= (visibility ?m) 1))
     )
   )
@@ -39,8 +39,8 @@
     :parameters (?m - marker ?pos - position)
     :duration (= ?duration 1)
     :condition (and
-      (at start(at_robot ?pos))
-      (at start(at_marker ?m ?pos))
+      (over all(at_robot ?pos))
+      (over all(at_marker ?m ?pos))
       ;;(at start(= (visibility ?m) 1))
     )
     :effect
