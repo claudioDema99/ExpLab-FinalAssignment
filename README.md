@@ -26,7 +26,7 @@ In order to detect the markers ID, the ArUco and the OpenCV packages are being u
 
 This project is implemented in simulation using the world file assignment2.world.
 
-Lastly, we intend to utilize ROSPLAN as the planning framework to design and synchronize the robot's activities.
+Lastly, we intend to utilize PlanSys2 as the planning framework to design and synchronize the robot's activities.
 
 
 ## The Robot 🤖
