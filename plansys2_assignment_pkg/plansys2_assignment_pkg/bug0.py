@@ -17,12 +17,13 @@ class Bug0(Node):
     def __init__(self):
         super().__init__('bug0')
 
+        self.active = False
         self.yaw_error_allowed = 5 * (math.pi / 180)  # 5 degrees
         self.position = Point()
         self.pose = Pose()
         self.desired_position = Point()
         self.desired_position.z = 0.0
-        self.regions = None
+        self.regions_ = None
         self.state_desc = ['Go to point', 'wall following', 'done']
         self.state = 0
         # 0 - go to point
@@ -55,10 +56,11 @@ class Bug0(Node):
         self.desired_position.y = 5.0
         self.get_logger().info('Bug0 node initialized')
 
+        self.timer = self.create_timer(0.1, self.run)
+
     def clbk_odom(self, msg):
         self.position = msg.pose.pose.position
         self.pose = msg.pose.pose
-        self.get_logger().info(' RICEVO ODOM')
         qx = msg.pose.pose.orientation.x
         qy = msg.pose.pose.orientation.y
         qz = msg.pose.pose.orientation.z
@@ -68,13 +70,12 @@ class Bug0(Node):
             self.yaw = math.pi + (math.pi + self.yaw)
 
     def clbk_laser(self, msg):
-        self.get_logger().info(' RICEVO LASER')
-        self.regions = {
-            'right': min(min(msg.ranges[100:139]), 10),
-            'fright': min(min(msg.ranges[140:179]), 10),
-            'front': min(min(msg.ranges[180:219]), 10),
-            'fleft': min(min(msg.ranges[220:259]), 10),
-            'left': min(min(msg.ranges[260:299]), 10),
+        self.regions_ = {
+            'right': min(min(msg.ranges[180:251]), 10),
+            'fright': min(min(msg.ranges[252:323]), 10),
+            'front': min(min(msg.ranges[324:395]), 10),
+            'fleft': min(min(msg.ranges[396:467]), 10),
+            'left': min(min(msg.ranges[468:539]), 10),
         }
 
     def change_state(self, state):
@@ -104,25 +105,30 @@ class Bug0(Node):
 
     def service_callback(self, request, response):
         self.change_state(0)
-        rate = self.create_rate(20)
+        self.active = request.data
+
         #self.desired_position.x = goal_handle.request.x_goal
         #self.desired_position.y = goal_handle.request.y_goal
-        i = 0
 
-        while rclpy.ok():
+        response.success = True
+        return response
+    
+    def run(self):
+        if self.active:
             err_pos = math.sqrt(pow(self.desired_position.y - self.position.y, 2) +
                                 pow(self.desired_position.x - self.position.x, 2))
             
             if err_pos < 0.5:
                 self.change_state(2)
                 self.done()
-                break
+                self.end_iteration()
 
-            elif self.regions is None:
-                continue
+            elif self.regions_ is None:
+                self.get_logger().info(" Waiting Laser information..")
 
             elif self.state == 0:
-                if self.regions['front'] < 0.2: # SE NON RICEVO LASER CALLBACK ERRORE
+                self.get_logger().error(f'Front region: {self.regions_["front"]}')
+                if self.regions_['front'] < 1.0: # SE NON RICEVO LASER CALLBACK ERRORE
                     self.change_state(1)
 
             elif self.state == 1:
@@ -130,30 +136,22 @@ class Bug0(Node):
                     self.desired_position.y - self.position.y, self.desired_position.x - self.position.x)
                 err_yaw = self.normalize_angle(desired_yaw - self.yaw)
 
-                if self.regions['front'] > 1 and math.fabs(err_yaw) < 0.05:
+                if self.regions_['front'] > 1 and math.fabs(err_yaw) < 0.05:
                     self.change_state(0)
 
             elif self.state == 2:
-                break
+                self.end_iteration()
 
             else:
                 self.get_logger().error('Unknown state!')
-            """            
-            i += 1
-            #time.sleep(0.1) METTENDO QUESTO NON SI STOPPA PIU
-            #rate.sleep()
-            if i == 100:
-                self.change_state(2)
-                self.done()
-                break
-            """
-
+    
+    def end_iteration(self):
+        self.active = False
         request = SetBool.Request()
         request.data = True
         future = self.client.call_async(request)
         future.add_done_callback(self.callback)
-        response.success = True
-        return response
+
 
     def callback(self, future):
         try:

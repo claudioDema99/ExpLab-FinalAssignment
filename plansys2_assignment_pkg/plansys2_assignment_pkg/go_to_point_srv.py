@@ -42,6 +42,8 @@ class GoToPoint(Node):
         self.pub = self.create_publisher(Twist, '/cmd_vel', 1)
 
         # service callbacks
+        self.service = self.create_service(SetBool, 'response_go_to', self.service_callback) #############################################################
+
         self.srv = self.create_service(SetBool, 'go_to_point_switch', self.go_to_point_switch)
 
         # subscribers
@@ -52,6 +54,10 @@ class GoToPoint(Node):
         self.get_logger().info('GoToPoint node initialized')
 
         self.timer = self.create_timer(0.1, self.run)
+
+    def service_callback(self, request, response): ########################################################
+        response.success = True
+        return response
 
     def go_to_point_switch(self, req, res):
         self.get_logger().info(" CI SIAMO NELLO SWITCH")
@@ -87,7 +93,7 @@ class GoToPoint(Node):
         desired_yaw = math.atan2(des_pos.y - self.position.y, des_pos.x - self.position.x)
         err_yaw = self.normalize_angle(desired_yaw - self.yaw)
 
-        self.get_logger().info(err_yaw)
+        #self.get_logger().info(err_yaw)
 
         twist_msg = Twist()
         if math.fabs(err_yaw) > self.yaw_precision_2:
@@ -128,15 +134,16 @@ class GoToPoint(Node):
 
     def done(self):
         twist_msg = Twist()
-        twist_msg.linear.x = 0
-        twist_msg.angular.z = 0
+        twist_msg.linear.x = 0.0
+        twist_msg.angular.z = 0.0
         self.pub.publish(twist_msg)
 
     def run(self):
         if not self.active:
-            self.get_logger().info(" not ACTIVE")
+            self.get_logger().info("")
+            #self.get_logger().info(" not ACTIVE")
         else:
-            self.get_logger().info(" ACTIVEeeeeeee")
+            #self.get_logger().info(" ACTIVEeeeeeee")
             self.desired_position.x = 5.0 # DA METTERE POS self.get_parameter('des_pos_x').value
             self.desired_position.y = 5.0 # DA METTERE POS self.get_parameter('des_pos_y').value
 

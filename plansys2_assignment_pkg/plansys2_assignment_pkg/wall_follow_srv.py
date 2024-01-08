@@ -51,11 +51,11 @@ class ReadingLaser(Node):
     def clbk_laser(self, msg):
         global regions_
         regions_ = {
-            'right': min(min(msg.ranges[0:143]), 10),
-            'fright': min(min(msg.ranges[144:287]), 10),
-            'front': min(min(msg.ranges[288:431]), 10),
-            'fleft': min(min(msg.ranges[432:575]), 10),
-            'left': min(min(msg.ranges[576:713]), 10),
+            'right': min(min(msg.ranges[180:251]), 10),
+            'fright': min(min(msg.ranges[252:323]), 10),
+            'front': min(min(msg.ranges[324:395]), 10),
+            'fleft': min(min(msg.ranges[396:467]), 10),
+            'left': min(min(msg.ranges[468:539]), 10),
         }
 
         self.take_action()
@@ -106,27 +106,31 @@ class ReadingLaser(Node):
             self.get_logger().info(regions)
 
     def find_wall(self):
+        print("FW")
         msg = Twist()
-        msg.linear.x = 0.2
+        msg.linear.x = 0.1
         msg.angular.z = -0.3
         return msg
 
     def turn_left(self):
+        print("TL")
         msg = Twist()
         msg.angular.z = 0.3
         return msg
 
     def follow_the_wall(self):
+        print("FOLLOW")
         global regions_
         msg = Twist()
         msg.linear.x = 0.5
         return msg
 
     def run(self):
-        if not self.active_:
-            self.get_logger().info(" NOT Active")
-        else:
-            self.get_logger().info(" AAA")
+        #if not self.active_:
+        #    self.get_logger().info(" NOT Active")
+        #else:
+        if self.active_:
+            #self.get_logger().info(" AAA")
             msg = Twist()
             if state_ == 0:
                 msg = self.find_wall()
