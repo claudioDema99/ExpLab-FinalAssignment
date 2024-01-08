@@ -27,14 +27,6 @@ ament_target_dependencies(ask_charge_action_node ${dependencies})
 
 install(DIRECTORY launch pddl DESTINATION share/${PROJECT_NAME})
 
-install(TARGETS
-  move_action_node
-  ask_charge_action_node
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
-)
-
 install(PROGRAMS
   plansys2_assignment_pkg/bug0.py
   plansys2_assignment_pkg/go_to_action_node.py

@@ -60,7 +60,6 @@ def generate_launch_description():
         executable='wall_follow_srv.py',
         name='wall_follow_srv',
     )
-    
 
     go_to_action_node = Node(
         package='plansys2_assignment_pkg',  # Replace with the actual package name
