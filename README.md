@@ -67,7 +67,7 @@ Domain Elements:
 
 ## THE NODES
 
-# go_to_action_node
+**go_to_action_node**
 
 the GoToAction node is designed to be an action executor within the ROS 2 environment and it responsible for executing specific actions within the defined planning domain.
 It serves basically as the bridge between the high-level planning specified in the PDDL file and the actual execution of actions on the robotic platform.
@@ -79,7 +79,7 @@ Features:
 - Communicates with an additional service client (/go_to_marker) to trigger the initiation of the 'go_to_marker' action.
 - Configurable parameters, such as action_name and timeout_sec, for adapting to specific use cases.
 
-# go_to_point_srv
+**go_to_point_srv**
 
 The GoToPoint node focuses on robotic navigation by directing the robot to move towards a specified point in its environment. This node utilizes odometry information to adjust the robot's orientation and linear movement. The robot can be switched between an active and inactive state using a service call.
 
@@ -92,7 +92,7 @@ Features:
 - Subscribes to odometry and laser scan topics for real-time sensor feedback.
 - Provides flexibility in adjusting parameters such as precision, proportional gains, and bounds.
 
-# wall_follow_srv
+**wall_follow_srv**
 
 This node implements a wall-following behavior based on laser scan data. It switches between different states (finding the wall, turning left, and following the wall) and adjusts the robot's movement accordingly. The state transitions are determined by the presence and distances of obstacles in different regions according to laser scan readings.
 
@@ -104,7 +104,7 @@ Features:
 - Adjusts the robot's velocity and angular velocity using Twist messages to navigate and follow the wall.
 - Incorporates configurable distance thresholds (d0 and d) to determine proximity to obstacles and make corresponding decisions.
 
-# bug0
+**bug0**
 
 The Bug0 node is a ROS 2 implementation of the Bug 0 algorithm for mobile robot navigation. The Bug 0 algorithm is a simple method that combines "go-to-point" and "wall-following" behaviors to reach a desired goal point while avoiding obstacles.
 
