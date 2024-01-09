@@ -60,6 +60,17 @@ Domain Elements:
 - go_to_marker: Represents the action of the robot moving from position ?from to ?to to reach marker ?m.
 - find_marker: Represents the action of the robot finding marker ?m at position ?pos.
 
+These are our domain and problem files:
+<br/>
+<figure>
+<img src="readme_image/pddl1.png" style="width:70%">
+</figure>
+<br/>
+<figure>
+<img src="readme_image/pddl2.png" style="width:70%">
+</figure>
+<br/>
+
 
 ## THE NODES
 
