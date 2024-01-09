@@ -43,7 +43,7 @@ The robot has a RGBD Camera used to visualize the sourrinding enviroment and det
 
 ## PDDL
 
-The Planning Domain Definition Language (PDDL) file included in this repository (</plansys2_assignment_pkg/pddl>) defines the planning domain for the robotic system. This file specifies the types, predicates, numeric fluents, and durative actions necessary for the robot to accomplish the assigned tasks of marker localization and navigation.
+The Planning Domain Definition Language (PDDL) file included in this repository (</plansys2_assignment_pkg/pddl>) defines the planning domain for the robotic system. This file specifies the types, predicates, and durative actions necessary for the robot to accomplish the assigned tasks of marker localization and navigation.
 
 Domain Elements:
 1) Types:
@@ -56,11 +56,7 @@ Domain Elements:
 - (connected_pos ?pos1 ?pos2): Denotes a connection between positions ?pos1 and ?pos2.
 - (reached ?m): Indicates that marker ?m has been reached.
 
-3) Numeric Fluents:
-
-- Currently commented out (visibility ?m - marker): Placeholder for potential numeric fluents, representing visibility or other numeric values.
-
-4) Durative Actions:
+3) Durative Actions:
 - go_to_marker: Represents the action of the robot moving from position ?from to ?to to reach marker ?m.
 - find_marker: Represents the action of the robot finding marker ?m at position ?pos.
 
