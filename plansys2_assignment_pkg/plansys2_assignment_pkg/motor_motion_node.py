@@ -27,13 +27,6 @@ class MotorControl(Node):
             self.rotation_on_off_callback,
             10)
         self.subscription
-        # SUBSCRIBER TO MARKER_REACHED
-        self.subscription = self.create_subscription(
-            Bool,
-            'marker_reached',
-            self.reached_callback,
-            10)
-        self.subscription
         # PUBLISHER TO CMD_VEL
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 10)
         # FLAG VARIABLE
@@ -50,26 +43,10 @@ class MotorControl(Node):
         if self.flag == 0:
             # wait for theta
             self.rotate(1)
-            self.get_logger().info('Rotating for theta...')
-
+            #self.get_logger().info('Rotating in search of the marker...')
         elif self.flag == 1:
-            # go straight
-            self.go(1)
-            self.get_logger().info('Going straight...')
-
-        elif self.flag == 2:
-            # go back and stop
-            self.go(-1)
-            time.sleep(self.dt)
-            self.go(-1)
-            time.sleep(self.dt)
-            self.stop()
-            time.sleep(self.dt * 2)
-            # set the waiting flag
-            self.flag = -1
             self.reached_marker += 1
-            self.get_logger().info('Going back...')
-        
+            self.flag = -1  
         elif self.flag == -1:
             if self.reached_marker == 4:
                 # shutdown the node when the robot has reached the 4 markers
@@ -102,24 +79,8 @@ class MotorControl(Node):
         elif mode == False and self.flag == 0:
             self.stop()
             time.sleep(self.dt * 2)
-            self.flag += 1
+            self.flag = 1
             time.sleep(self.dt * 2)           
-        
-
-    def reached_callback(self, msg):
-        # callback for stopping the robot when the marker is reached
-        stop = msg.data
-        
-        # the robot has reached the marker and stop the movement
-        if stop == True and self.flag == 1:
-            self.stop()
-            time.sleep(self.dt * 2)
-            self.flag += 1
-            time.sleep(self.dt * 2)
-        # the robot has left the marker and go back to rotate and search for the marker
-        elif stop == False and self.flag == 1:
-            self.stop()
-            self.flag = 0
 
     def stop(self):
         # stop the robot
@@ -128,13 +89,6 @@ class MotorControl(Node):
         cmd_vel.angular.z = 0.0
         self.publisher_.publish(cmd_vel)
         time.sleep(0.1)
-
-    def go(self, sign):
-        # move the robot forward or backward
-        cmd_vel = Twist()
-        cmd_vel.linear.x = (sign * MAX_VEL) * 0.50
-        cmd_vel.angular.z = 0.0
-        self.publisher_.publish(cmd_vel)
 
     def rotate(self, sign):
         # rotate the robot clockwise or counterclockwise

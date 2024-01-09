@@ -143,8 +143,8 @@ class GoToPoint(Node):
         if self.active:
             position = self.marker_pos[self.counter]
             x_des, y_des = position
-            self.desired_position.x = x_des
-            self.desired_position.y = y_des
+            self.desired_position.x = float(x_des)
+            self.desired_position.y = float(y_des)
             if self.state == 0:
                 self.fix_yaw(self.desired_position)
             elif self.state == 1:

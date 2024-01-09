@@ -8,10 +8,13 @@ class MarkerSearcherAction(ActionExecutorClient):
 
     def __init__(self):
         super().__init__('find_marker', 0.5)
+        self.action_name = 'marker_searcher'
         self.service = self.create_service(SetBool, 'response_marker_searcher', self.service_callback)
         self.client = self.create_client(SetBool, 'search_marker')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting...')
+        self.current_arguments = None
+        self.state = 0
 
     def callback(self, future):
         try:
@@ -20,15 +23,22 @@ class MarkerSearcherAction(ActionExecutorClient):
             self.get_logger().info('Service call failed: %s' % str(e))
     
     def service_callback(self, request, response):
-        self.finish(True, 1.0, 'Charge completed')
+        self.state = 2
         response.success = True
         return response
 
     def do_work(self):
-        request = SetBool.Request()
-        request.data = True
-        future = self.client.call_async(request)
-        future.add_done_callback(self.callback)
+        if self.state == 0:
+            self.state = 1
+            request = SetBool.Request()
+            request.data = True
+            future = self.client.call_async(request)
+            future.add_done_callback(self.callback)
+        elif self.state == 1:
+            self.state = 1
+        else:
+            self.state = 0
+            self.finish(True, 1.0, 'Charge completed')
 
 def main(args=None):
     rclpy.init(args=args)

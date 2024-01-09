@@ -1,31 +1,4 @@
-"""
-This node locates Aruco AR markers in images and publishes their ids and poses.
-
-Subscriptions:
-   /camera/image_raw (sensor_msgs.msg.Image)
-   /camera/camera_info (sensor_msgs.msg.CameraInfo)
-   /camera/camera_info (sensor_msgs.msg.CameraInfo)
-
-Published Topics:
-    /aruco_poses (geometry_msgs.msg.PoseArray)
-       Pose of all detected markers (suitable for rviz visualization)
-
-    /aruco_markers (ros2_aruco_interfaces.msg.ArucoMarkers)
-       Provides an array of all poses along with the corresponding
-       marker ids.
-
-Parameters:
-    marker_size - size of the markers in meters (default .0625)
-    aruco_dictionary_id - dictionary that was used to generate markers
-                          (default DICT_5X5_250)
-    image_topic - image topic to subscribe to (default /camera/image_raw)
-    camera_info_topic - camera info topic to subscribe to
-                         (default /camera/camera_info)
-
-Author: Nathan Sprague
-Version: 10/26/2020
-
-"""
+#!/usr/bin/env python3
 
 import rclpy
 import rclpy.node
@@ -51,8 +24,8 @@ class ArucoNode(rclpy.node.Node):
         # Declare and read parameters
         self.declare_parameter("marker_size", .0625)
         self.declare_parameter("aruco_dictionary_id", "DICT_ARUCO_ORIGINAL")
-        self.declare_parameter("image_topic", "/camera/image_raw")
-        self.declare_parameter("camera_info_topic", "/camera/camera_info")
+        self.declare_parameter("image_topic", "/orbbec_astra_camera/camera/image_raw")
+        self.declare_parameter("camera_info_topic", "/orbbec_astra_camera/camera/camera_info")
         self.declare_parameter("camera_frame", None)
 
         self.marker_size = self.get_parameter("marker_size").get_parameter_value().double_value
