@@ -120,15 +120,10 @@ Features:
 
 ## Logic of the program 🔄
 
-The logic of the problem itself is really simple and it can be explained in only 4 states, as shown:
 
-<br/>
-<figure>
-<img src="readme_image/flow_chart.png" width="500">
-</figure>
-<br/>
 The pddl domain simply contains two durative-actions: *go_to_marker* and *find_marker*.  
 
+  
 **Go_to_marker:**
 
 This durative-action triggers the *go_to_action_node* node, which using a service call enables a bug0 algorithm to work. The *bug0* node manages the behavior of *wall_follow* and *go_to_point* nodes, in order to let the robot reach the desired position avoiding the obstacles met along the path. When the desired position is reached, the *bug0* uses another service call in order to inform the *go_to_action_node* that the goal is concluded.  
