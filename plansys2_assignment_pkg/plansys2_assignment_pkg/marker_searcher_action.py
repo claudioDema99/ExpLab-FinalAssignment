@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.parameter import Parameter, ParameterType
-
 from plansys2_support_py.ActionExecutorClient import ActionExecutorClient
-
 from std_srvs.srv import SetBool
 
 class MarkerSearcherAction(ActionExecutorClient):
 
     def __init__(self):
-        super().__init__('marker_searcher', 0.5)
-        self.action_name = 'marker_searcher'
+        super().__init__('find_marker', 0.5)
         self.service = self.create_service(SetBool, 'response_marker_searcher', self.service_callback)
         self.client = self.create_client(SetBool, 'search_marker')
         while not self.client.wait_for_service(timeout_sec=1.0):
@@ -36,7 +33,7 @@ class MarkerSearcherAction(ActionExecutorClient):
 def main(args=None):
     rclpy.init(args=args)
     node = MarkerSearcherAction()
-    node.set_parameters([Parameter(name='action_name', value='marker_searcher')])
+    node.set_parameters([Parameter(name='action_name', value='find_marker')])
     node.trigger_configure()
     rclpy.spin(node)
     rclpy.shutdown()

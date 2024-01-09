@@ -99,7 +99,6 @@ class Bug0(Node):
         self.change_state(0)
         self.active = request.data
         position = self.marker_pos[self.counter]
-        self.counter += 1
         x_des, y_des = position
         self.desired_position.x = float(x_des)
         self.desired_position.y = float(y_des)
@@ -132,6 +131,7 @@ class Bug0(Node):
                     self.change_state(0)
 
             elif self.state == 2:
+                self.counter += 1
                 self.end_iteration()
 
             else:
