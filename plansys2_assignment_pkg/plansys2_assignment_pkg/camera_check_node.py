@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
 import rclpy
-from rclpy.parameter import Parameter, ParameterType
 from rclpy.executors import MultiThreadedExecutor
 
 from rclpy.node import Node
-from std_msgs.msg import Bool, Float32MultiArray
+from std_msgs.msg import Bool
 
 from std_srvs.srv import SetBool
 from ros2_aruco_interfaces.msg import ArucoMarkers
@@ -102,12 +101,13 @@ class CameraCheck(Node):
                    
     ## callback for UPDATE the MARKER'S INFO ##
     def aruco_callback(self, msg):
+        self.get_logger().warn('{} NOT found'.format(self.id_marker))
         self.id_marker = self.goal_markers[self.reached_marker] # take the marker's id to reach
         # take the markers's id
         self.ids_marker = msg.marker_ids
         # check if the marker is the one we are looking for
         if self.id_marker in self.ids_marker:
-            self.get_logger().info('Marker {} found'.format(self.id_marker))
+            self.get_logger().info('MARKER {} FOUND'.format(self.id_marker))
             self.flag_marker = 1        
         else:
             # if the marker is not in the list we wait and then we check again
