@@ -13,7 +13,6 @@ class MarkerSearcherAction(ActionExecutorClient):
         self.client = self.create_client(SetBool, 'search_marker')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting...')
-        self.current_arguments = None
         self.state = 0
 
     def callback(self, future):

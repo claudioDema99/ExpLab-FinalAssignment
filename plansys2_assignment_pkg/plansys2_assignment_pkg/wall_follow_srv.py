@@ -29,9 +29,7 @@ class ReadingLaser(Node):
         
         global pub_
         pub_ = self.create_publisher(Twist, '/cmd_vel', 1)
-        
         self.sub = self.create_subscription(LaserScan, '/laser/scan', self.clbk_laser, 1)
-        
         self.srv = self.create_service(SetBool, 'wall_follower_switch', self.wall_follower_switch)
         
         self.active_ = False
@@ -44,7 +42,6 @@ class ReadingLaser(Node):
         global active_
         self.active_ = req.data
         res.success = True
-        res.message = 'Done!'
         return res
 
     def clbk_laser(self, msg):
@@ -56,7 +53,6 @@ class ReadingLaser(Node):
             'fleft': min(min(msg.ranges[396:467]), 10),
             'left': min(min(msg.ranges[468:539]), 10),
         }
-
         self.take_action()
 
     def change_state(self, state):
@@ -72,7 +68,6 @@ class ReadingLaser(Node):
         d0 = 1
         d = 1.5
         
-        
         if regions['front'] > d0 and regions['fleft'] > d and regions['fright'] > d:
             state_description = 'case 1 - nothing'
             self.change_state(0)
@@ -82,7 +77,6 @@ class ReadingLaser(Node):
         elif regions['front'] > d0 and regions['fleft'] < d and regions['fright'] < d:
             state_description = 'case 8 - fleft and fright'
             self.change_state(0)
-                
         elif regions['front'] < d0 and regions['fleft'] > d and regions['fright'] > d:
             state_description = 'case 2 - front'
             self.change_state(1)
@@ -95,31 +89,26 @@ class ReadingLaser(Node):
         elif regions['front'] < d0 and regions['fleft'] < d and regions['fright'] < d:
             state_description = 'case 7 - front and fleft and fright'
             self.change_state(1)
-                 
         elif regions['front'] > d0 and regions['fleft'] > d and regions['fright'] < d:
             state_description = 'case 3 - fright'
-            self.change_state(2) 
-               
+            self.change_state(2)
         else:
             state_description = 'unknown case'
             self.get_logger().info(regions)
 
     def find_wall(self):
-        print("FW")
         msg = Twist()
         msg.linear.x = 0.2
         msg.angular.z = -0.3
         return msg
 
     def turn_left(self):
-        print("TL")
         msg = Twist()
         msg.linear.x = 0.0
         msg.angular.z = 0.3
         return msg
 
     def follow_the_wall(self):
-        print("FOLLOW")
         global regions_
         msg = Twist()
         msg.linear.x = 0.5
@@ -127,44 +116,29 @@ class ReadingLaser(Node):
         return msg
 
     def run(self):
-        #if not self.active_:
-        #    self.get_logger().info(" NOT Active")
-        #else:
         if self.active_:
-            #self.get_logger().info(" AAA")
             msg = Twist()
             if state_ == 0:
                 msg = self.find_wall()
-                print("FIND WALL")
             elif state_ == 1:
                 msg = self.turn_left()
-                print("TURN LEFT")
             elif state_ == 2:
                 msg = self.follow_the_wall()
-                print("FOLLOW WALL")
             else:
                 self.get_logger().error('Unknown state!')
-
             pub_.publish(msg)
 
 def main(args=None):
     rclpy.init(args=args)
-
     reading_laser_node = ReadingLaser()
-
     executor = MultiThreadedExecutor()
-
     executor.add_node(reading_laser_node)
-
     try:
         executor.spin_once() 
         while rclpy.ok():
             executor.spin_once()
-
     except KeyboardInterrupt:
         pass
-
-    # Cleanup
     reading_laser_node.destroy_node()
     rclpy.shutdown()
 

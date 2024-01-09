@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import rclpy
+import math
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from std_srvs.srv import SetBool
 from geometry_msgs.msg import Twist, Point
 from nav_msgs.msg import Odometry
-import math
-
 from tf_transformations import euler_from_quaternion
 
 class GoToPoint(Node):
@@ -23,8 +22,8 @@ class GoToPoint(Node):
 
         # goal
         self.desired_position = Point()
-        self.desired_position.x = 0.0 #self.get_parameter('des_pos_x').value
-        self.desired_position.y = 0.0 #self.get_parameter('des_pos_y').value
+        self.desired_position.x = 0.0
+        self.desired_position.y = 0.0
         self.desired_position.z = 0.0
         self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-3, -8.0), (-7.0, 1.5)]
         self.counter = 0
@@ -34,7 +33,7 @@ class GoToPoint(Node):
         self.yaw_precision_2 = math.pi / 90  # +/- 2 degree allowed
         self.dist_precision = 0.3
 
-        self.kp_a = 3.0  # In ROS Noetic, it may be necessary to change the sign of this proportional controller
+        self.kp_a = 3.0
         self.kp_d = 0.2
         self.ub_a = 0.6
         self.lb_a = -0.5
@@ -45,7 +44,6 @@ class GoToPoint(Node):
 
         # service callbacks
         self.service = self.create_service(SetBool, 'response_go_to', self.service_callback)
-
         self.srv = self.create_service(SetBool, 'go_to_point_switch', self.go_to_point_switch)
 
         # subscribers
@@ -63,26 +61,19 @@ class GoToPoint(Node):
         return response
 
     def go_to_point_switch(self, req, res):
-        self.get_logger().info(" CI SIAMO NELLO SWITCH")
         self.active = req.data
         res.success = True
-        res.message = 'Done!'
         return res
     
     def clbk_odom(self, msg):
-        # position
         self.position = msg.pose.pose.position
-
-        # yaw
         qx = msg.pose.pose.orientation.x
         qy = msg.pose.pose.orientation.y
         qz = msg.pose.pose.orientation.z
         qw = msg.pose.pose.orientation.w
-        # Convert quaternion to theta
         self.yaw = math.atan2(2.0*(qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz)
         if self.yaw < 0:
             self.yaw = math.pi + (math.pi + self.yaw)
-        #############################
         self.yaw = self.normalize_angle(self.yaw)
 
     def change_state(self, state):
@@ -94,16 +85,12 @@ class GoToPoint(Node):
             angle = angle - (2 * math.pi * angle) / (math.fabs(angle))
         return angle
     
-    #########################################
     def normalize_angle(self, angle):
         return euler_from_quaternion([0, 0, math.sin(angle / 2), math.cos(angle / 2)])[2]
 
     def fix_yaw(self, des_pos):
         desired_yaw = math.atan2(des_pos.y - self.position.y, des_pos.x - self.position.x)
         err_yaw = self.normalize_angle(desired_yaw - self.yaw)
-
-        #self.get_logger().info(err_yaw)
-
         twist_msg = Twist()
         if math.fabs(err_yaw) > self.yaw_precision_2:
             twist_msg.angular.z = self.kp_a * err_yaw
@@ -111,10 +98,7 @@ class GoToPoint(Node):
                 twist_msg.angular.z = self.ub_a
             elif twist_msg.angular.z < self.lb_a:
                 twist_msg.angular.z = self.lb_a
-
         self.pub.publish(twist_msg)
-
-        # state change conditions
         if math.fabs(err_yaw) <= self.yaw_precision_2:
             self.get_logger().info(f'Yaw error: [{err_yaw}]')
             self.change_state(1)
@@ -123,20 +107,16 @@ class GoToPoint(Node):
         desired_yaw = math.atan2(des_pos.y - self.position.y, des_pos.x - self.position.x)
         err_yaw = desired_yaw - self.yaw
         err_pos = math.sqrt(pow(des_pos.y - self.position.y, 2) + pow(des_pos.x - self.position.x, 2))
-
         if err_pos > self.dist_precision:
             twist_msg = Twist()
             twist_msg.linear.x = self.kp_d * err_pos
             if twist_msg.linear.x > self.ub_d:
                 twist_msg.linear.x = self.ub_d
-
             twist_msg.angular.z = self.kp_a * err_yaw
             self.pub.publish(twist_msg)
         else:
             self.get_logger().info(f'Position error: [{err_pos}]')
             self.change_state(2)
-
-        # state change conditions
         if math.fabs(err_yaw) > self.yaw_precision:
             self.get_logger().info(f'Yaw error: [{err_yaw}]')
             self.change_state(0)
@@ -164,19 +144,13 @@ class GoToPoint(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-
     go_to_point_node = GoToPoint()
-
     executor = MultiThreadedExecutor()
-
     executor.add_node(go_to_point_node)
-
     try:
         executor.spin()
     except KeyboardInterrupt:
         pass
-
-    # Cleanup
     go_to_point_node.destroy_node()
     rclpy.shutdown()
 

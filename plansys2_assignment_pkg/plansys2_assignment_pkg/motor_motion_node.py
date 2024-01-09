@@ -43,7 +43,6 @@ class MotorControl(Node):
         if self.flag == 0:
             # wait for theta
             self.rotate(1)
-            #self.get_logger().info('Rotating in search of the marker...')
         elif self.flag == 1:
             self.reached_marker += 1
             self.flag = -1  
@@ -53,9 +52,6 @@ class MotorControl(Node):
                 self.get_logger().info('Shutting down...')
                 self.destroy_node()
                 rclpy.shutdown()
-            # wait for the start of the action
-            # do nothing
-            #self.get_logger().info('Waiting for the start of the action...')
 
     def odom_callback(self, msg):
         # callback for updating the robot orientation
@@ -71,7 +67,6 @@ class MotorControl(Node):
     def rotation_on_off_callback(self, msg):
         # callback for updating the goal orientation
         mode = msg.data
-        
         # the robot start the rotation
         if mode == True:
             self.flag = 0
@@ -102,22 +97,13 @@ def main(args=None):
 
     try:
         motor_control = MotorControl()
-
-        # create a multi-threaded executor
         executor = MultiThreadedExecutor()
-
-        # add the node to the executor
         executor.add_node(motor_control)
-
         try:
-            # use spin_once() instead of spin() to allow for multi-threaded execution
             while rclpy.ok():
                 executor.spin_once()
-
         finally:
-            # clean up
             rclpy.shutdown()
-
     except Exception as e:
         print(f"Error in main: {str(e)}")
 
