@@ -15,7 +15,7 @@ class Bug0(Node):
     def __init__(self):
         super().__init__('bug0')
 
-        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-3.0, -8.0), (-7.0, 1.5)]
+        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-2.5, -8.0), (-7.0, 1.5)]
         self.counter = 0
 
         self.active = False
