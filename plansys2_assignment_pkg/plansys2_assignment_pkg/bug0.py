@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import rclpy
+from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from geometry_msgs.msg import Point, Pose, Twist
 from sensor_msgs.msg import LaserScan
@@ -153,11 +154,21 @@ class Bug0(Node):
 
 def main(args=None):
     rclpy.init(args=args)
+
     bug0_node = Bug0()
-    rclpy.spin(bug0_node)
+
+    executor = MultiThreadedExecutor()
+
+    executor.add_node(bug0_node)
+
+    try:
+        executor.spin()
+    except KeyboardInterrupt:
+        pass
+
+    # Cleanup
     bug0_node.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
-
