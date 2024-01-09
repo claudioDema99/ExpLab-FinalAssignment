@@ -23,7 +23,6 @@ class Bug0(Node):
         self.position = Point()
         self.pose = Pose()
         self.desired_position = Point()
-        #self.desired_position.z = 0.0
         self.regions_ = None
         self.state_desc = ['Go to point', 'wall following', 'done']
         self.state = 0
@@ -45,8 +44,6 @@ class Bug0(Node):
         self.sub_laser = self.create_subscription(LaserScan, '/laser/scan', self.clbk_laser, QoSProfile(depth=10))
         self.sub_odom = self.create_subscription(Odometry, '/odom', self.clbk_odom, QoSProfile(depth=10))
         self.pub = self.create_publisher(Twist, '/cmd_vel', QoSProfile(depth=10))
-        #self.desired_position.x = 0.0
-        #self.desired_position.y = 0.0
         self.get_logger().info('Bug0 node initialized')
 
         self.timer = self.create_timer(0.1, self.run)
@@ -151,19 +148,13 @@ class Bug0(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-
     bug0_node = Bug0()
-
     executor = MultiThreadedExecutor()
-
     executor.add_node(bug0_node)
-
     try:
         executor.spin()
     except KeyboardInterrupt:
         pass
-
-    # Cleanup
     bug0_node.destroy_node()
     rclpy.shutdown()
 
