@@ -101,8 +101,8 @@ class Bug0(Node):
         position = self.marker_pos[self.counter]
         self.counter += 1
         x_des, y_des = position
-        self.desired_position.x = x_des
-        self.desired_position.y = y_des
+        self.desired_position.x = float(x_des)
+        self.desired_position.y = float(y_des)
         response.success = True
         return response
     
