@@ -37,7 +37,7 @@
 
   (:durative-action find_marker
     :parameters (?m - marker ?pos - position)
-    :duration (= ?duration 1)
+    :duration (= ?duration 2)
     :condition (and
       (over all(at_robot ?pos))
       (over all(at_marker ?m ?pos))
