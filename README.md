@@ -127,14 +127,11 @@ The logic of the problem itself is really simple and it can be explained in only
 <img src="readme_image/flow_chart.png" width="500">
 </figure>
 <br/>
-
-Going more in the details, the main nodes that manage the logic of the problem are three: *RobotController*, *MotorControl* and *RobotRevoluteNode*.  
-*RobotController* enables the *RobotRevoluteNode* to start with the rotation of the camera: it looks for Aruco Marker and, in particular, it looks for the area of the Aruco Marker.  
-While the area increases with the rotation of the camera, the node continues with the movement and it only stops when the area stops growing: this means that the robot should be almost aligned with the target.  
-At this point the camera sends the actual value of the angle of rotation so the robot can aligned too: during this process, the *MotorController* publishes to the *RobotRevoluteNode* its rotation speed, so the camera can rotate in the opposite direction and remain aligned with the camera.  
-Once both robot and camera are aligned, the robot starts going straight.  
-While the robot goes, the *RobotController* checks the length of the longest side visible from the camera: when it surpasses a threshold, it means that the target is reached and the process can restart with the next marker.  
-Once all the markers are reached, all the nodes shut down.
+The pddl domain simply contains two durative-actions: *go_to_marker* and *find_marker*.  
+Go_to_marker:  
+This durative-action triggers the *go_to_action_node* node, which using a service call enables a bug0 algorithm to work. The *bug0* node manages the behavior of *wall_follow* and *go_to_point* nodes, in order to let the robot reach the desired position avoiding the obstacles met along the path. When the desired position is reached, the *bug0* uses another service call in order to inform the *go_to_action_node* that the goal is concluded.  
+Find_marker:  
+This durative-action triggers the *marker_searcher_action* node, which using a service call enables the searching for the marker. The *motor_motion_node* is responsible for letting the robot rotate on itself, while the *camera_check_node* simply tries to detect the aruco marker that from this position should be visible from the robot. When it recognizes the corresponding marker, the robot stops rotating and it gives back to the *marker_searcher_action* node the information that the goal has been reached.
 
 
 ## Install and run ⚙
