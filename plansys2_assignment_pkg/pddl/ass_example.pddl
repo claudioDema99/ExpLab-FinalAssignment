@@ -1,4 +1,4 @@
-(define (domain robotFega)
+(define (domain rosbotAruco)
 (:requirements :strips :typing :adl :fluents :durative-actions)
   (:types 
     marker 
