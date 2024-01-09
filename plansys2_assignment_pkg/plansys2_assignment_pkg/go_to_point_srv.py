@@ -8,6 +8,8 @@ from geometry_msgs.msg import Twist, Point
 from nav_msgs.msg import Odometry
 import math
 
+from tf_transformations import euler_from_quaternion
+
 class GoToPoint(Node):
     def __init__(self):
         super().__init__('go_to_point')
@@ -24,7 +26,7 @@ class GoToPoint(Node):
         self.desired_position.x = 0.0 #self.get_parameter('des_pos_x').value
         self.desired_position.y = 0.0 #self.get_parameter('des_pos_y').value
         self.desired_position.z = 0.0
-        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-3, -8.0), (-7.0, -1.5)]
+        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-3, -8.0), (-7.0, 1.5)]
         self.counter = 0
 
         # parameters
@@ -80,6 +82,8 @@ class GoToPoint(Node):
         self.yaw = math.atan2(2.0*(qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz)
         if self.yaw < 0:
             self.yaw = math.pi + (math.pi + self.yaw)
+        #############################
+        self.yaw = self.normalize_angle(self.yaw)
 
     def change_state(self, state):
         self.state = state
@@ -89,6 +93,10 @@ class GoToPoint(Node):
         if math.fabs(angle) > math.pi:
             angle = angle - (2 * math.pi * angle) / (math.fabs(angle))
         return angle
+    
+    #########################################
+    def normalize_angle(self, angle):
+        return euler_from_quaternion([0, 0, math.sin(angle / 2), math.cos(angle / 2)])[2]
 
     def fix_yaw(self, des_pos):
         desired_yaw = math.atan2(des_pos.y - self.position.y, des_pos.x - self.position.x)

@@ -15,7 +15,7 @@ class Bug0(Node):
     def __init__(self):
         super().__init__('bug0')
 
-        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-3, -8.0), (-7.0, -1.5)]
+        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-3, -8.0), (-7.0, 1.5)]
         self.counter = 0
 
         self.active = False
@@ -131,14 +131,11 @@ class Bug0(Node):
                 if self.regions_['front'] > 1 and math.fabs(err_yaw) < 0.05:
                     self.change_state(0)
 
-            elif self.state == 2:
-                self.counter += 1
-                self.end_iteration()
-
             else:
                 self.get_logger().error('Unknown state!')
     
     def end_iteration(self):
+        self.counter += 1
         self.active = False
         request = SetBool.Request()
         request.data = True

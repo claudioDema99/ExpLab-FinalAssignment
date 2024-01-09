@@ -61,7 +61,7 @@ class ReadingLaser(Node):
 
     def change_state(self, state):
         global state_, state_dict_
-        if state is not state_:
+        if state is not state_ and self.active_:
             self.get_logger().info(f'Wall follower - [{state}] - {state_dict_[state]}')
             state_ = state
 

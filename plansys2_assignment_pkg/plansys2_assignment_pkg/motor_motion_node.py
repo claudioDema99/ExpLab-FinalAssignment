@@ -48,7 +48,7 @@ class MotorControl(Node):
             self.reached_marker += 1
             self.flag = -1  
         elif self.flag == -1:
-            if self.reached_marker == 4:
+            if self.reached_marker == 5:
                 # shutdown the node when the robot has reached the 4 markers
                 self.get_logger().info('Shutting down...')
                 self.destroy_node()
