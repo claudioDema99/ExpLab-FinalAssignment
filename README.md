@@ -60,12 +60,15 @@ Domain Elements:
 - go_to_marker: Represents the action of the robot moving from position ?from to ?to to reach marker ?m.
 - find_marker: Represents the action of the robot finding marker ?m at position ?pos.
 
-These are our domain and problem files:
+These are our domain and problem files, and the corresponding output plan:
 <p float="left">
   <img src="readme_image/pddl_1.png" style="width:48%" alt="PDDL Domain File">
   <img src="readme_image/pddl_2.png" style="width:48%" alt="PDDL Problem File">
 </p>
-
+<figure>
+<img src="readme_image/pddl3.png" style="width:70%">
+</figure>
+<br/>
 
 ## THE NODES
 
