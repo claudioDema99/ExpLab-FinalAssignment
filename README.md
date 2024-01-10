@@ -66,7 +66,7 @@ These are our domain and problem files, and the corresponding output plan:
   <img src="readme_image/pddl_2.png" style="width:48%" alt="PDDL Problem File">
 </p>
 <figure>
-<img src="readme_image/pddl3.png" style="width:70%">
+<img src="readme_image/pddl3.png" style="width:40%">
 </figure>
 <br/>
 
