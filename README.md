@@ -188,9 +188,12 @@ With the last command (*run*), the robot should start the movements decided by t
 
 The video showcasing the robot's motion in the Gazebo environment as it navigates and interacts with its surroundings. The video provides a visual representation of how the robot responds to the environment, demonstrating its movements and behaviors:
 
+
 https://github.com/claudioDema99/ExpLab-FinalAssignment/assets/114250896/481f7781-e3cb-4340-b96e-0287b0dfc617
 
+
 The robot's camera provides a visual feed through an Rviz video, offering a view into its perspective and visual observations. This video stream allows us to gain insight into what the camera captures and how it operates. Additionally, the LiDAR data is represented by a red line or group of points in the visualization, indicating the obstacles detected in the environment. This information is crucial for the robot to navigate and control its movements, helping it avoid obstacles and make informed decisions based on its surroundings:
+
 
 [Rviz_rec2_camandlidar.webm](https://github.com/claudioDema99/ExpLab-FinalAssignment/assets/114250896/9ace0bf3-9199-46a9-b458-4a786eb0a6ac)
 
