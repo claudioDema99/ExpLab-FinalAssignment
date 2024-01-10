@@ -65,8 +65,8 @@ class ReadingLaser(Node):
         global regions_
         regions = regions_
 
-        d0 = 1
-        d = 1.5
+        d0 = 0.6
+        d = 1.0
         
         if regions['front'] > d0 and regions['fleft'] > d and regions['fright'] > d:
             state_description = 'case 1 - nothing'

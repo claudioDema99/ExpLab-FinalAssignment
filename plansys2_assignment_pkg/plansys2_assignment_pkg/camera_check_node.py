@@ -60,7 +60,7 @@ class CameraCheck(Node):
 ############################# FUNCTIONS ######################################
 ##############################################################################
         
-    ## callback for STARTING the ACTION ##
+    ## callback for STARTING the functions ##
     def service_callback(self, request, response):
         self.active = request.data
         response.success = True
@@ -68,7 +68,8 @@ class CameraCheck(Node):
              
     ## TIMER for the CONTROLLER LOGIC ##
     def timer_callback(self):
-        if self.active:            
+        if self.active:
+            # check if all the markers are reached         
             self.id_marker = self.goal_markers[self.reached_marker] # take the marker's id to reach
             if self.flag == 0:
                 self.rotation_robot_activation(True)
@@ -76,17 +77,29 @@ class CameraCheck(Node):
                     self.rotation_robot_activation(False)
                     self.flag = 1
             elif self.flag == 1:
+                self.get_logger().info('MARKER {} FOUND'.format(self.id_marker))
                 self.reached_marker += 1
-                self.flag = 0
-                self.end_iteration()              
-                        
+                if self.reached_marker == len(self.goal_markers):
+                    self.get_logger().info('ALL MARKERS REACHED')
+                    self.end_iteration()
+                    # kill the node
+                    self.destroy_node()
+                    rclpy.shutdown()  
+                else:
+                    self.flag_marker = 0
+                    self.flag = 0
+                    self.end_iteration()          
+    
+    ## callback for ENDING the iteration ##           
     def end_iteration(self):
-        self.active = False
-        request = SetBool.Request()
-        request.data = True
-        future = self.srv_client_marker_searcher.call_async(request)
-        future.add_done_callback(self.callback)
-        
+        if self.active:
+            self.active = False
+            request = SetBool.Request()
+            request.data = True
+            future = self.srv_client_marker_searcher.call_async(request)
+            future.add_done_callback(self.callback)
+    
+    ## callback for the SERVICE ##    
     def callback(self, future):
         try:
             response = future.result()
@@ -101,13 +114,13 @@ class CameraCheck(Node):
                    
     ## callback for UPDATE the MARKER'S INFO ##
     def aruco_callback(self, msg):
-        self.get_logger().warn('{} NOT found'.format(self.id_marker))
-        self.id_marker = self.goal_markers[self.reached_marker] # take the marker's id to reach
+        if self.reached_marker < len(self.goal_markers):
+            # take the marker's id to reach
+            self.id_marker = self.goal_markers[self.reached_marker]
         # take the markers's id
         self.ids_marker = msg.marker_ids
         # check if the marker is the one we are looking for
         if self.id_marker in self.ids_marker:
-            self.get_logger().info('MARKER {} FOUND'.format(self.id_marker))
             self.flag_marker = 1        
         else:
             # if the marker is not in the list we wait and then we check again
@@ -121,30 +134,19 @@ def main(args=None):
         print("Robot Control node has been started")
         
         # Create the executor
-        ececuter = MultiThreadedExecutor()
+        executor = MultiThreadedExecutor()
         
         # Add the node to the executor
-        ececuter.add_node(camera_check)
+        executor.add_node(camera_check)
         print("Robot Control node has been added to the executor")
         
         try:
             while rclpy.ok():
-                ececuter.spin_once()
-        
+                executor.spin_once()
         finally:
-            # Destroy the node explicitly
-            print('Destroying node...')
-            ececuter.shutdown()
-            camera_check.destroy_node()
             rclpy.shutdown()
-            
-    except KeyboardInterrupt:
-        # Destroy the node explicitly
-        print('Interrupted by user')
-        camera_check.destroy_node()
-        rclpy.shutdown()
+    except Exception as e:
+        print(f"ERROR in the main camera_check_node.py: {str(e)}")
 
-    rclpy.spin(camera_check)
-    
 if __name__ == '__main__':
     main()

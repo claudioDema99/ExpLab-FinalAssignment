@@ -34,17 +34,28 @@ class MotorControl(Node):
         self.theta_goal = 0.0
         self.flag = -1
         self.dt = 0.1
+        self.marker_reached = 0
         # TIMER
         self.control_loop_timer = self.create_timer(self.dt, self.robot_movement)
 
     def robot_movement(self):
         # Main control loop
-        if self.flag == 0:
-            # wait for theta
-            self.rotate(1)
-        elif self.flag == -1:
-            # wait for theta_goal
-            self.flag = -1
+        if self.marker_reached == 4:
+            # kill the node
+            self.get_logger().info('ROBOT MOTION NODE KILLED')
+            self.destroy_node()
+            rclpy.shutdown()
+        else:
+            if self.flag == 0:
+                # rotate the robot
+                self.rotate(1)
+            elif self.flag == 1:
+                # increase the marker reached
+                self.marker_reached += 1
+                self.flag = -1
+            elif self.flag == -1:
+                # wait for another marker
+                self.flag = -1
 
     def odom_callback(self, msg):
         # callback for updating the robot orientation
@@ -63,11 +74,11 @@ class MotorControl(Node):
         # the robot start the rotation
         if mode == True:
             self.flag = 0
-        # the robot stop the rotation and go straight
+        # the robot stop the rotation
         elif mode == False and self.flag == 0:
             self.stop()
             time.sleep(self.dt * 2)
-            self.flag = -1
+            self.flag = 1
             time.sleep(self.dt * 2)           
 
     def stop(self):
@@ -90,15 +101,20 @@ def main(args=None):
 
     try:
         motor_control = MotorControl()
+        print("Motor control node started")
+        
         executor = MultiThreadedExecutor()
+        
         executor.add_node(motor_control)
+        print("Motor control node added to executor")
+        
         try:
             while rclpy.ok():
                 executor.spin_once()
         finally:
             rclpy.shutdown()
     except Exception as e:
-        print(f"Error in main: {str(e)}")
+        print(f"Error in the main motor_control_node.py: {str(e)}")
 
 if __name__ == '__main__':
     main()

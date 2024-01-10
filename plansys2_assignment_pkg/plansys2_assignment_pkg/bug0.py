@@ -15,7 +15,7 @@ class Bug0(Node):
     def __init__(self):
         super().__init__('bug0')
 
-        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-2.5, -8.0), (-7.0, 1.5), (1.0, 1.0)]
+        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-3.5, -8.0), (-7.0, 1.5), (1.0, 1.0)]
         self.counter = 0
 
         self.active = False
@@ -24,12 +24,22 @@ class Bug0(Node):
         self.pose = Pose()
         self.desired_position = Point()
         self.regions_ = None
-        self.state_desc = ['Go to point', 'wall following', 'done']
+        self.state_desc = ['Go to point', 'wall following', 'motion DONE']
         self.state = 0
         # 0 - go to point
         # 1 - wall following
         # 2 - done
         # 3 - canceled
+        
+        # parameters from go_to_point
+        self.yaw_precision_1 = math.pi / 180  # +/- 1 degree allowed
+        self.dist_precision = 0.3
+        self.kp_a = 3.0
+        self.kp_d = 0.2
+        self.ub_a = 0.6
+        self.lb_a = -0.5
+        self.ub_d = 0.6
+        self.go_to_point = 0
 
         self.srv_client_go_to_point = self.create_client(SetBool, '/go_to_point_switch')
         self.srv_client_wall_follower = self.create_client(SetBool, '/wall_follower_switch')
@@ -105,33 +115,49 @@ class Bug0(Node):
     
     def run(self):
         if self.active:
-            err_pos = math.sqrt(pow(self.desired_position.y - self.position.y, 2) +
-                                pow(self.desired_position.x - self.position.x, 2))
-            
-            if err_pos < 0.5:
-                self.change_state(2)
-                self.done()
-                self.end_iteration()
+            # aglinment the robot with the marker before start the motion
+            desired_yaw = math.atan2(self.desired_position.y - self.position.y, self.desired_position.x - self.position.x)
+            err_yaw = self.normalize_angle(desired_yaw - self.yaw)
+            twist_msg = Twist()
+            if math.fabs(err_yaw) > self.yaw_precision_1 and self.go_to_point == 0:
+                twist_msg.angular.z = self.kp_a * err_yaw
+                if twist_msg.angular.z > self.ub_a:
+                    twist_msg.angular.z = self.ub_a
+                elif twist_msg.angular.z < self.lb_a:
+                    twist_msg.angular.z = self.lb_a
+                self.pub.publish(twist_msg)
+            if math.fabs(err_yaw) <= self.yaw_precision_1:
+                self.go_to_point = 1
+            # go to the marker when the robot is aligned with it         
+            if self.go_to_point == 1:            
+                err_pos = math.sqrt(pow(self.desired_position.y - self.position.y, 2) +
+                                    pow(self.desired_position.x - self.position.x, 2))
+                d0 = 0.7
+                if err_pos < 0.5:
+                    self.change_state(2)
+                    self.done()
+                    self.end_iteration()
 
-            elif self.regions_ is None:
-                self.get_logger().info(" Waiting Laser information..")
+                elif self.regions_ is None:
+                    self.get_logger().info(" Waiting Laser information..")
 
-            elif self.state == 0:
-                if self.regions_['front'] < 1.0:
-                    self.change_state(1)
+                elif self.state == 0:
+                    if self.regions_['front'] < d0:
+                        self.change_state(1)
 
-            elif self.state == 1:
-                desired_yaw = math.atan2(
-                    self.desired_position.y - self.position.y, self.desired_position.x - self.position.x)
-                err_yaw = self.normalize_angle(desired_yaw - self.yaw)
+                elif self.state == 1:
+                    desired_yaw = math.atan2(
+                        self.desired_position.y - self.position.y, self.desired_position.x - self.position.x)
+                    err_yaw = self.normalize_angle(desired_yaw - self.yaw)
 
-                if self.regions_['front'] > 1 and math.fabs(err_yaw) < 0.05:
-                    self.change_state(0)
+                    if self.regions_['front'] > d0 and math.fabs(err_yaw) < 0.05:
+                        self.change_state(0)
 
-            else:
-                self.get_logger().error('Unknown state!')
+                else:
+                    self.get_logger().error('Unknown state!')
     
     def end_iteration(self):
+        self.go_to_point = 0
         self.counter += 1
         self.active = False
         request = SetBool.Request()

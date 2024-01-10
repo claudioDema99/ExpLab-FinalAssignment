@@ -25,7 +25,7 @@ class GoToPoint(Node):
         self.desired_position.x = 0.0
         self.desired_position.y = 0.0
         self.desired_position.z = 0.0
-        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-2.5, -8.0), (-7.0, 1.5), (1.0, 1.0)]
+        self.marker_pos = [(6.0, 2.0), (7.0, -5.0), (-3.5, -8.0), (-7.0, 1.5), (1.0, 1.0)]
         self.counter = 0
 
         # parameters
