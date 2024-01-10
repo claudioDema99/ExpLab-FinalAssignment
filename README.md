@@ -62,8 +62,8 @@ Domain Elements:
 
 These are our domain and problem files:
 <p float="left">
-  <img src="readme_image/pddl_1.png" style="width:50%" alt="PDDL Domain File">
-  <img src="readme_image/pddl_2.png" style="width:50%" alt="PDDL Problem File">
+  <img src="readme_image/pddl_1.png" style="width:48%" alt="PDDL Domain File">
+  <img src="readme_image/pddl_2.png" style="width:48%" alt="PDDL Problem File">
 </p>
 
 
