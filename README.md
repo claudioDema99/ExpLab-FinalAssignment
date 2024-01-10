@@ -70,6 +70,21 @@ These are our domain and problem files, and the corresponding output plan:
 </figure>
 <br/>
 
+## Logic of the program 🔄
+
+
+The pddl domain simply contains two durative-actions: *go_to_marker* and *find_marker*.  
+
+  
+**Go_to_marker:**
+
+This durative-action triggers the *go_to_action_node* node, which using a service call enables a bug0 algorithm to work. The *bug0* node manages the behavior of *wall_follow* and *go_to_point* nodes, in order to let the robot reach the desired position avoiding the obstacles met along the path. When the desired position is reached, the *bug0* uses another service call in order to inform the *go_to_action_node* that the goal is concluded.  
+
+**Find_marker:**
+
+This durative-action triggers the *marker_searcher_action* node, which using a service call enables the searching for the marker. The *motor_motion_node* is responsible for letting the robot rotate on itself, while the *camera_check_node* simply tries to detect the aruco marker that from this position should be visible from the robot. When it recognizes the corresponding marker, the robot stops rotating and it gives back to the *marker_searcher_action* node the information that the goal has been reached.
+
+
 ## THE NODES
 
 **go_to_action_node**
@@ -122,43 +137,26 @@ Features:
 - Supports a service (/go_to_marker) to trigger the Bug 0 algorithm and start the navigation process.
 - Capable of handling asynchronous service calls and continuously adjusts its behavior based on laser readings and robot position.
 
-
-## Logic of the program 🔄
-
-
-The pddl domain simply contains two durative-actions: *go_to_marker* and *find_marker*.  
-
-  
-**Go_to_marker:**
-
-This durative-action triggers the *go_to_action_node* node, which using a service call enables a bug0 algorithm to work. The *bug0* node manages the behavior of *wall_follow* and *go_to_point* nodes, in order to let the robot reach the desired position avoiding the obstacles met along the path. When the desired position is reached, the *bug0* uses another service call in order to inform the *go_to_action_node* that the goal is concluded.  
-
-**Find_marker:**
-
-This durative-action triggers the *marker_searcher_action* node, which using a service call enables the searching for the marker. The *motor_motion_node* is responsible for letting the robot rotate on itself, while the *camera_check_node* simply tries to detect the aruco marker that from this position should be visible from the robot. When it recognizes the corresponding marker, the robot stops rotating and it gives back to the *marker_searcher_action* node the information that the goal has been reached.
-
-
 ## Install and run ⚙
 
 First of all, you need to download the repository with the following command inside your workspace:
 
-    git clone https://github.com/claudioDema99/ExpLab-FirstAssignment
+    git clone https://github.com/claudioDema99/ExpLab-FinalAssignment
 
 From the root directory of your ROS2 workspace run the command:
 
     colcon build
 
-Now, you have to install `konsole` with the command:
+Now, you have to launch all the nodes using:
 
-    sudo apt-get install konsole
+    ros2 launch plansys2_assignment_pkg assignment2.launch.py
 
-Inside the `/src/ExpLab-FirstAssignment` of your root directory and use:
+For starting the problem file, you should run:
 
-    chmod u+x launch_exp.sh
+    ros2 run plansys2_terminal plansys2_terminal
     
-Finally, to run the code, type the following command:
-
-    bash launch_exp.sh
+Finally, inside the *plansys2_terminal* node, type the commands contained inside the plansys2_assignment_pkg/launch/problem_command.txt file.
+With the last command (*run*), the robot should start the movements decided by the pddl planner.
 
 ## Videos 📼
 
