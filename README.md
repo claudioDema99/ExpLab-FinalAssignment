@@ -169,7 +169,7 @@ From the root directory of your ROS2 workspace run the command:
 
     colcon build
 
-If the package 'plansys2_tools' has problems during building, we suggest building itself later as shown:
+If the package *plansys2_tools* has problems during building, we suggest building itself later as shown:
 
     colcon build --packages-select plansys2_tools
 
@@ -181,7 +181,7 @@ To start the problem file, you should run:
 
     ros2 run plansys2_terminal plansys2_terminal
     
-Finally, inside the *plansys2_terminal* node, type the commands contained inside the plansys2_assignment_pkg/launch/problem_command.txt file.
+Finally, inside the *plansys2_terminal* node, type the commands contained inside the *plansys2_assignment_pkg/launch/problem_command.txt* file.  
 With the last command (*run*), the robot should start the movements decided by the pddl planner.
 
 ## Videos 📼
