@@ -192,7 +192,7 @@ https://github.com/claudioDema99/ExpLab-FinalAssignment/assets/114250896/481f778
 
 The robot's camera through an Rviz video, offering a glimpse into its perspective and visual observations. Gain insight into what the camera captures and how it operates:
 
-https://github.com/claudioDema99/ExpLab-FirstAssignment/assets/114250896/50d890b1-f94b-49b8-abd3-637680c6a316
+[Rviz_rec2_camandlidar.webm](https://github.com/claudioDema99/ExpLab-FinalAssignment/assets/114250896/9ace0bf3-9199-46a9-b458-4a786eb0a6ac)
 
 
 ## Possible improvements 📈
