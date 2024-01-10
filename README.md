@@ -63,11 +63,11 @@ Domain Elements:
 These are our domain and problem files:
 <br/>
 <figure>
-<img src="readme_image/pddl1.png" style="width:50%">
+<img src="readme_image/pddl_1.png" style="width:50%">
 </figure>
 <br/>
 <figure>
-<img src="readme_image/pddl2.png" style="width:50%">
+<img src="readme_image/pddl_2.png" style="width:50%">
 </figure>
 <br/>
 
