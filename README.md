@@ -194,11 +194,9 @@ https://github.com/claudioDema99/ExpLab-FirstAssignment/assets/114250896/50d890b
 
 ## Possible improvements 📈
 
-We attempted to implement an action-client server for motion control, integrating relative positions obtained from the camera with respect to the robot's frame and absolute positions from odometry. During initial tests using known relative positions, the robot exhibited precise movements—moving perpendicularly to each marker and stopping accurately.
+The Bug0 algorithm is a simple navigation algorithm designed for mobile robots, commonly used for obstacle avoidance and pathfinding in environments where the robot needs to reach a goal position while avoiding obstacles.  
+The first suggested improvement regards the Bug0 algorithm: for example, enhancing its adaptability and efficiency in navigating the robot through its environment, dynamically adapting goals based on the surroundings, and optimizing rotation strategies with the possibility to let the robot rotate in each sense, so improving obstacle avoidance with consideration for obstacle shapes. These enhancements collectively aim to make the Bug0 algorithm more robust and effective in different navigation scenarios.
 
-However, when we incorporated coordinates obtained from the camera, the robot's motion became erratic. After conducting numerous tests, we identified a potential issue with the relative positions due to the lack of camera calibration.
-
-To enhance the system, we are considering camera calibration to rectify the inaccuracies associated with the relative positions. This calibration process aims to improve the accuracy of the camera data, which should subsequently result in more reliable and precise robot movements. Probabily, after calibration we will assess the impact on the overall performance of the action-client server for motion control.
-
-
+Other more general improvements could allow users to easily tune parameters for controllers, planners, or other critical components through launch file arguments or configuration files (also providing guidelines or documentation on how to optimize parameters for specific scenarios and robot models).  
+Extend the planning domain to handle more complex scenarios and tasks, and also develop a simple user interface that allows users to interact with the robot, set goals, or monitor its activities in real-time.
 
