@@ -184,8 +184,7 @@ With the last command (*run*), the robot should start the movements decided by t
 
 The video showcasing the robot's motion in the Gazebo environment as it navigates and interacts with its surroundings. The video provides a visual representation of how the robot responds to the environment, demonstrating its movements and behaviors:
 
-https://github.com/claudioDema99/ExpLab-FirstAssignment/assets/114250896/425a8420-1c74-4e93-bcef-bf3c2a1b7a72
-
+https://github.com/claudioDema99/ExpLab-FinalAssignment/assets/114250896/481f7781-e3cb-4340-b96e-0287b0dfc617
 
 The robot's camera through an Rviz video, offering a glimpse into its perspective and visual observations. Gain insight into what the camera captures and how it operates:
 
