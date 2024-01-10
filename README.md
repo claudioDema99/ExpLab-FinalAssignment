@@ -169,6 +169,10 @@ From the root directory of your ROS2 workspace run the command:
 
     colcon build
 
+If the package 'plansys2_tools' has problems during building, we suggest building itself later as shown:
+
+    colcon build --packages-select plansys2_tools
+
 Now, you have to launch all the nodes using:
 
     ros2 launch plansys2_assignment_pkg assignment2.launch.py
