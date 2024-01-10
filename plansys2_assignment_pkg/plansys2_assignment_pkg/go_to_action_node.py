@@ -8,7 +8,7 @@ from std_srvs.srv import SetBool
 class GoToAction(ActionExecutorClient):
 
     def __init__(self):
-        super().__init__('go_to_marker', 0.5)      
+        super().__init__('go_to_spot', 0.5)      
         self.service = self.create_service(SetBool, 'response_go_to', self.service_callback)
         self.client = self.create_client(SetBool, 'go_to_spot')
         while not self.client.wait_for_service(timeout_sec=1.0):
@@ -42,7 +42,7 @@ class GoToAction(ActionExecutorClient):
 def main(args=None):
     rclpy.init(args=args)
     node = GoToAction()
-    node.set_parameters([Parameter(name='action_name', value='go_to_marker')])
+    node.set_parameters([Parameter(name='action_name', value='go_to_spot')])
     node.trigger_configure()
     rclpy.spin(node)
     rclpy.shutdown()

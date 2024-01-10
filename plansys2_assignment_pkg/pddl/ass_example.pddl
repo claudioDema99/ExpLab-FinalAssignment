@@ -17,7 +17,7 @@
   )
 
   ;; Durative Actions
-  (:durative-action go_to_marker
+  (:durative-action go_to_spot
     :parameters (?m - marker ?from ?to - position ?l - logic);; 
     :duration (= ?duration 10)
     :condition (and
