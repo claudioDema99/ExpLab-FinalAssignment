@@ -34,7 +34,6 @@ class MotorControl(Node):
         self.theta_goal = 0.0
         self.flag = -1
         self.dt = 0.1
-        self.reached_marker = 0
         # TIMER
         self.control_loop_timer = self.create_timer(self.dt, self.robot_movement)
 
@@ -43,15 +42,9 @@ class MotorControl(Node):
         if self.flag == 0:
             # wait for theta
             self.rotate(1)
-        elif self.flag == 1:
-            self.reached_marker += 1
-            self.flag = -1  
         elif self.flag == -1:
-            if self.reached_marker == 4:
-                # shutdown the node when the robot has reached the 4 markers
-                self.get_logger().info('Shutting down...')
-                self.destroy_node()
-                rclpy.shutdown()
+            # wait for theta_goal
+            self.flag = -1
 
     def odom_callback(self, msg):
         # callback for updating the robot orientation
@@ -74,7 +67,7 @@ class MotorControl(Node):
         elif mode == False and self.flag == 0:
             self.stop()
             time.sleep(self.dt * 2)
-            self.flag = 1
+            self.flag = -1
             time.sleep(self.dt * 2)           
 
     def stop(self):
