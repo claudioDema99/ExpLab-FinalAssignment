@@ -18,7 +18,7 @@
 
   ;; Durative Actions
   (:durative-action go_to_spot
-    :parameters (?m - marker ?from ?to - position ?l - logic);; 
+    :parameters (?m - marker ?from ?to - position ?l - logic)
     :duration (= ?duration 10)
     :condition (and
       (at start(at_robot ?from))
@@ -35,7 +35,7 @@
   )
 
   (:durative-action find_marker
-    :parameters (?m - marker ?pos - position ?l - logic);; 
+    :parameters (?m - marker ?pos - position ?l - logic)
     :duration (= ?duration 5)
     :condition (and
       (over all(at_robot ?pos))
