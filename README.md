@@ -87,16 +87,16 @@ This durative-action triggers the *marker_searcher_action* node, which using a s
 
 ## THE NODES
 
-**go_to_action_node**
+**go_to_action_node** and **marker_searcher_action**
 
-the GoToAction node is designed to be an action executor within the ROS 2 environment and it responsible for executing specific actions within the defined planning domain.
-It serves basically as the bridge between the high-level planning specified in the PDDL file and the actual execution of actions on the robotic platform.
+The GoToAction and MarkerSearcherAction nodes are designed to be action executor within the ROS 2 environment and are responsible for executing specific actions within the defined planning domain.
+They serve basically as the bridge between the high-level planning specified in the PDDL file and the actual execution of actions on the robotic platform.
 
 Features:
 - Extends the ActionExecutorClient class, allowing seamless integration with PlanSys2 actions.
-- Utilizes an Action Client (ActionExecutorClient) to manage the execution of the durative action'go_to_marker.'
-- Provides a service (/response_go_to) to handle responses and completion status of the 'go_to_marker' action.
-- Communicates with an additional service client (/go_to_marker) to trigger the initiation of the 'go_to_marker' action.
+- Utilizes an Action Client (ActionExecutorClient) to manage the execution of the durative actions 'go_to_marker' and 'find_marker'.
+- Provides services (/response_go_to and /response_marker_searcher) to handle responses and completion status of 'go_to_marker' and 'find_marker' actions respectively.
+- Communicates with an additional service client (/go_to_marker and /search_marker) to trigger the initiation of 'go_to_marker' and 'find_marker' actions.
 - Configurable parameters, such as action_name and timeout_sec, for adapting to specific use cases.
 
 **go_to_point_srv**
