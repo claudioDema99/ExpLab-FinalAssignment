@@ -61,15 +61,11 @@ Domain Elements:
 - find_marker: Represents the action of the robot finding marker ?m at position ?pos.
 
 These are our domain and problem files:
-<br/>
 <figure>
-<img src="readme_image/pddl_1.png" style="width:50%">
+  <img src="readme_image/pddl_1.png" style="width:45%" alt="PDDL Domain File">
+  <img src="readme_image/pddl_2.png" style="width:45%" alt="PDDL Problem File">
+  <figcaption>Left: PDDL Domain File, Right: PDDL Problem File</figcaption>
 </figure>
-<br/>
-<figure>
-<img src="readme_image/pddl_2.png" style="width:50%">
-</figure>
-<br/>
 
 
 ## THE NODES
