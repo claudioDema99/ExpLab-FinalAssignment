@@ -137,6 +137,28 @@ Features:
 - Supports a service (/go_to_marker) to trigger the Bug 0 algorithm and start the navigation process.
 - Capable of handling asynchronous service calls and continuously adjusts its behavior based on laser readings and robot position.
 
+**camera_check_node**
+
+The CameraCheck node is responsible for monitoring and controlling the robot's behavior based on ArUco marker detection. This node interacts with the robotic system to achieve marker-based navigation.
+
+Features:
+- Provides a service (/search_marker) to initiate or stop the marker search process.
+- Subscribes to the 'aruco_markers' topic to receive information about detected ArUco markers.
+- Uses a publisher to send control signals to the 'motor_rotation_on_off' topic for activating or deactivating the robot's rotation.
+- Implements a controller logic loop to determine the next ArUco marker to reach based on a predefined list of goal markers.
+- Dynamically adjusts its behavior based on the state of the marker search service and the presence of the target marker.
+
+**motor_motion_node**
+
+The MotorControl node is responsible for controlling the robot's movement, specifically focusing on the rotation of the robot. This node subscribes to odometry and rotation on/off topics and adjusts the robot's behavior accordingly.
+
+Features:
+- Subscribes to the 'odom' topic to receive odometry information for updating the robot's orientation and to the 'motor_rotation_on_off' topic to receive signals for starting or stopping the robot's rotation.
+- Publishes velocity commands to the 'cmd_vel' topic, influencing the robot's rotating movement.
+- Utilizes a flag variable (flag) to manage the robot's behavior:
+- - flag = 0: Initiates rotation based on received signals.
+- - flag = -1: Waits for the next rotation goal.
+
 ## Install and run ⚙
 
 First of all, you need to download the repository with the following command inside your workspace:
