@@ -8,16 +8,16 @@ E. Piacenti (s5636699) 🤓
 
 ## Description 📑
 
-In this assignment we have developed a ROS2 package that lets a mobile robots , endowed with a camera, do the following tasks:
+In this assignment we have developed a ROS2 package that lets a mobile robot, endowed with a camera, do the following tasks:
 
-1) find alla markers in the enviroment.
+1) find all markers in the environment.
 
 2) go back to the starting position.
 
 3) get around obstacles using the Bug0 algorithm.
 
 
-In order to detect the markers ID, the ArUco and the OpenCV packages are being used and the informations about the markers to be reached are:
+In order to detect the markers ID, the ArUco and the OpenCV packages are being used and the information about the markers to be reached are:
 - marker 11 is visible from the position x = 6.0, y = 2.0
 - marker 12 is visible from the position x = 7.0, y = -5.0
 - marker 13 is visible from the position x = -3.0, y = -8.0
@@ -31,8 +31,8 @@ Lastly, we intend to utilize PlanSys2 as the planning framework to design and sy
 
 ## The Robot 🤖
 
-In simulation we are using the model of the ROSbot2R, a mobile robot platform designed for use with the Robot Operating System (ROS), defined in the rosbot_description package.
-The robot has a RGBD Camera used to visualize the sourrinding enviroment and detect the interest objects.
+In the simulation, we are using the model of the ROSbot2R, a mobile robot platform designed for use with the Robot Operating System (ROS), defined in the rosbot_description package.
+The robot has an RGBD Camera used to visualize the surrounding environment and detect interest objects.
 
 <figure>
 <img src="readme_image/robot.jpg" style="width:50%">
@@ -89,7 +89,7 @@ This durative-action triggers the *marker_searcher_action* node, which using a s
 
 **go_to_action_node** and **marker_searcher_action**
 
-The GoToAction and MarkerSearcherAction nodes are designed to be action executor within the ROS 2 environment and are responsible for executing specific actions within the defined planning domain.
+The GoToAction and MarkerSearcherAction nodes are designed to be action executors within the ROS 2 environment and are responsible for executing specific actions within the defined planning domain.
 They serve basically as the bridge between the high-level planning specified in the PDDL file and the actual execution of actions on the robotic platform.
 
 Features:
@@ -101,7 +101,7 @@ Features:
 
 **go_to_point_srv**
 
-The GoToPoint node focuses on robotic navigation by directing the robot to move towards a specified point in its environment. This node utilizes odometry information to adjust the robot's orientation and linear movement. The robot can be switched between an active and inactive state using a service call.
+The GoToPoint node focuses on robotic navigation by directing the robot to move toward a specified point in its environment. This node utilizes odometry information to adjust the robot's orientation and linear movement. The robot can be switched between an active and inactive state using a service call.
 
 Features:
 - Tracks robot state variables including position (x, y) and yaw orientation.
@@ -135,7 +135,7 @@ Features:
 - - Wall following (State 1): If an obstacle is encountered during the "go to point" phase, the robot switches to following the wall until a clear path is available.
 - - Done (State 2): Indicates successful completion of the goal point or the task.
 - Supports a service (/go_to_marker) to trigger the Bug 0 algorithm and start the navigation process.
-- Capable of handling asynchronous service calls and continuously adjusts its behavior based on laser readings and robot position.
+- Capable of handling asynchronous service calls and continuously adjusting its behavior based on laser readings and robot position.
 
 **camera_check_node**
 
@@ -173,7 +173,7 @@ Now, you have to launch all the nodes using:
 
     ros2 launch plansys2_assignment_pkg assignment2.launch.py
 
-For starting the problem file, you should run:
+To start the problem file, you should run:
 
     ros2 run plansys2_terminal plansys2_terminal
     
