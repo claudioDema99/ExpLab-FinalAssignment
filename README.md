@@ -20,7 +20,7 @@ In this assignment we have developed a ROS2 package that lets a mobile robot, en
 In order to detect the markers ID, the ArUco and the OpenCV packages are being used and the information about the markers to be reached are:
 - marker 11 is visible from the position x = 6.0, y = 2.0
 - marker 12 is visible from the position x = 7.0, y = -5.0
-- marker 13 is visible from the position x = -3.0, y = -8.0
+- marker 13 is visible from the position x = -3.5, y = -8.0
 - marker 15 is visible from the position x = -7.0, y =-1.5
 
 
