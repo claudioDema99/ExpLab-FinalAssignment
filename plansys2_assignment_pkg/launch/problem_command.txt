@@ -1,3 +1,4 @@
+> set instance m0 marker
 > set instance m1 marker
 > set instance m2 marker
 > set instance m2 marker
@@ -10,6 +11,7 @@
 > set instance p4 position
 > set instance l logic
 > set predicate (at_robot p)
+> set predicate (at_marker m0 p)
 > set predicate (at_marker m1 p1)
 > set predicate (at_marker m2 p2)
 > set predicate (at_marker m3 p3)
